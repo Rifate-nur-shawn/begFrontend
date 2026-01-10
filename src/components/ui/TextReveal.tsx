@@ -31,6 +31,7 @@ export default function TextReveal({
         type: "spring",
         damping: 12,
         stiffness: 100,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
     hidden: {
@@ -40,6 +41,7 @@ export default function TextReveal({
         type: "spring",
         damping: 12,
         stiffness: 100,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
   };
