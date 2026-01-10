@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { useUIStore } from "@/store/ui-store";
@@ -8,7 +9,8 @@ import { useCartStore } from "@/store/cart-store";
 import clsx from "clsx";
 
 export default function Header() {
-  const { toggleMenu, isMenuOpen, openCart } = useUIStore();
+  const pathname = usePathname();
+  const { toggleMenu, isMenuOpen, openCart, openSearch, isSearchOpen, isCartOpen } = useUIStore();
   const { items } = useCartStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
@@ -21,14 +23,24 @@ export default function Header() {
     }
   });
 
+  // Calculate if any overlay is open (Menu, Cart, Search)
+  const isOverlayOpen = isMenuOpen || isCartOpen || isSearchOpen;
+
+  // Determine text color: White on Home Hero (unscrolled), Black everywhere else (or when overlay open)
+  const isHomeHero = pathname === "/" && !isScrolled && !isOverlayOpen;
+  const textColorClass = isHomeHero ? "text-white mix-blend-difference" : "text-primary";
+
   return (
     <header
       className={clsx(
         "fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-transparent",
-        isScrolled ? "bg-canvas/80 backdrop-blur-md py-4 border-accent-subtle" : "bg-transparent py-6"
+        isScrolled && !isOverlayOpen ? "bg-canvas/80 backdrop-blur-md py-4 border-accent-subtle" : "bg-transparent py-6"
       )}
     >
-      <div className="max-w-[1920px] mx-auto px-6 md:px-12 flex justify-between items-center">
+      <div className={clsx(
+        "max-w-[1920px] mx-auto px-6 md:px-12 flex justify-between items-center relative z-[100]",
+        textColorClass
+      )}>
         {/* Left: Menu Trigger */}
         <button
           onClick={toggleMenu}
@@ -37,7 +49,7 @@ export default function Header() {
           {isMenuOpen ? "Close" : "Menu"}
         </button>
 
-        {/* Center: Logo */}
+        {/* Center: Logo - Hide if overlay is open on mobile to avoid clutter, or keep it. Keeping it. */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
           <h1 className="font-display text-2xl md:text-4xl tracking-tight font-bold">
             BegOnShop
@@ -46,7 +58,10 @@ export default function Header() {
 
         {/* Right: Actions */}
         <div className="flex gap-6 items-center">
-            <button className="font-utility text-xs tracking-widest uppercase hidden md:block">
+            <button 
+                onClick={openSearch}
+                className="font-utility text-xs tracking-widest uppercase hidden md:block hover:underline underline-offset-4"
+            >
                 Search
             </button>
             <button 

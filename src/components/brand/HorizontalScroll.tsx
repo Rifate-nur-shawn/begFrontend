@@ -9,12 +9,12 @@ export default function HorizontalScroll({ children, className }: { children: Re
     target: targetRef,
   });
 
-  const x = useTransform(scrollYProgress, [0, 1], ["1%", "-95%"]);
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-85%"]);
 
   return (
-    <section ref={targetRef} className="relative h-[300vh] bg-neutral-900">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <motion.div style={{ x }} className={`flex gap-4 ${className}`}>
+    <section ref={targetRef} className="relative h-[300vh] bg-canvas">
+      <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+        <motion.div style={{ x }} className={`flex gap-4 px-12 md:px-32 ${className}`}>
           {children}
         </motion.div>
       </div>

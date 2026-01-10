@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Product } from "@/lib/api/products";
 
 export default function ProductCard({ product, className }: { product: Product; className?: string }) {

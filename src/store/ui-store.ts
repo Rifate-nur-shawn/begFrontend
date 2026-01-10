@@ -9,7 +9,8 @@ interface UIState {
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  toggleSearch: () => void;
+  openSearch: () => void;
+  closeSearch: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -21,5 +22,6 @@ export const useUIStore = create<UIState>((set) => ({
   toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen, isMenuOpen: false, isSearchOpen: false })),
   openCart: () => set({ isCartOpen: true, isMenuOpen: false, isSearchOpen: false }),
   closeCart: () => set({ isCartOpen: false }),
-  toggleSearch: () => set((state) => ({ isSearchOpen: !state.isSearchOpen, isMenuOpen: false, isCartOpen: false })),
+  openSearch: () => set({ isSearchOpen: true, isMenuOpen: false, isCartOpen: false }),
+  closeSearch: () => set({ isSearchOpen: false }),
 }));

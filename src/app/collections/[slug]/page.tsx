@@ -7,8 +7,8 @@ const getCollectionProducts = async (slug: string) => {
     return PRODUCTS; 
 };
 
-export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug }  = await params;
+export default async function CollectionPage({ params: _params }: { params: Promise<{ slug: string }> }) {
+  const { slug }  = await _params;
   const products = await getCollectionProducts(slug);
 
   return (
