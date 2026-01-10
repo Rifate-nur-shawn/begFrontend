@@ -31,7 +31,7 @@ export const MENU_DATA: MenuSection[] = [
     title: "BegOnShop",
     items: [
       { label: "Our Story", href: "/about" },
-      { label: "Atelier", href: "/atelier" },
+      { label: "The Campaign", href: "/campaign" },
       { label: "Sustainability", href: "/sustainability" },
       { label: "Store Locator", href: "/stores" },
     ],

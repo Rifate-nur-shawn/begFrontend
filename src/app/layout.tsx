@@ -3,6 +3,7 @@ import { Bodoni_Moda, Inter } from "next/font/google";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Header from "@/components/layout/Header";
 import MenuOverlay from "@/components/layout/MenuOverlay";
+import CartDrawer from "@/components/cart/CartDrawer";
 import "./globals.css";
 
 const bodoni = Bodoni_Moda({
@@ -35,6 +36,7 @@ export default function RootLayout({
         <SmoothScroll>
             <Header />
             <MenuOverlay />
+            <CartDrawer />
             <main className="pt-24 min-h-screen">
                 {children}
             </main>
