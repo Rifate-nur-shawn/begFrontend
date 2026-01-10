@@ -43,6 +43,31 @@ export default function AboutPage() {
             </div>
        </div>
 
+       {/* Team / Creative Direction */}
+       <div className="max-w-[1920px] mx-auto px-4 md:px-12 mt-32 md:mt-48">
+            <h3 className="font-display text-3xl md:text-5xl mb-16 text-center">The Maison</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                    { name: "Elena V.", role: "Creative Director", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop" },
+                    { name: "Adrian K.", role: "Head of Atelier", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1887&auto=format&fit=crop" },
+                    { name: "Sophina M.", role: "Lead Artisan", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop" },
+                ].map((member) => (
+                    <div key={member.name} className="group cursor-default">
+                        <div className="relative w-full aspect-[3/4] mb-6 overflow-hidden bg-neutral-100">
+                             <Image 
+                                src={member.img} 
+                                alt={member.name} 
+                                fill 
+                                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                             />
+                        </div>
+                        <h4 className="font-display text-xl">{member.name}</h4>
+                        <p className="font-utility text-xs text-neutral-500 uppercase tracking-widest mt-1">{member.role}</p>
+                    </div>
+                ))}
+            </div>
+       </div>
+
     </div>
   );
 }
