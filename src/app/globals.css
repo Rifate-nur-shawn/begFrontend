@@ -15,17 +15,7 @@
   --foreground: var(--color-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Keeping distinct dark mode or forcing light as per "Stark whitespace" requirements? 
-       User said "Stark whitespace" but also mentioned "High-Gloss". 
-       Usually luxury fashion sites are light. I will keep light dominant for now. 
-       But I'll define dark variables just in case, mapping to high contrast dark. 
-    */
-    --background: #0A0A0A;
-    --foreground: #FDFDFD;
-  }
-}
+/* Force light mode for luxury aesthetic */
 
 body {
   background-color: var(--background);
