@@ -28,15 +28,30 @@ export default function Header() {
   // Calculate if any overlay is open (Menu, Cart, Search)
   const isOverlayOpen = isMenuOpen || isCartOpen || isSearchOpen;
 
-  // Determine text color: White on Home Hero (unscrolled), Black everywhere else (or when overlay open)
+  // Determine text color: 
+  // - White on Home Hero (unscrolled)
+  // - White when scrolled (Dark navbar)
+  // - Black on other pages when not scrolled (unless we want dark navbar everywhere? User complained about scroll specifically)
+  // Let's make it simple: 
+  // Scrolled -> White text (background is dark)
+  // Unscrolled Home -> White text (background transparent on dark image)
+  // Unscrolled Other -> Black text (background transparent on white canvas)
+  
+  const isScrolledDark = isScrolled && !isOverlayOpen;
   const isHomeHero = pathname === "/" && !isScrolled && !isOverlayOpen;
-  const textColorClass = isHomeHero ? "text-white mix-blend-difference" : "text-primary";
+  
+  // If overlay is open, we usually want black text on white overlay, BUT our overlays might different.
+  // Menu/Cart are drawers. Search is overlay. 
+  // Let's stick to: if Scrolled OR HomeHero -> White. Else -> Primary.
+  
+  const shouldUseWhiteText = isScrolledDark || isHomeHero;
+  const textColorClass = shouldUseWhiteText ? "text-white" : "text-primary";
 
   return (
     <header
       className={clsx(
         "fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-transparent",
-        isScrolled && !isOverlayOpen ? "bg-canvas/80 backdrop-blur-md py-4 border-accent-subtle" : "bg-transparent py-6"
+        isScrolledDark ? "bg-black/90 backdrop-blur-md py-4 border-white/10" : "bg-transparent py-6"
       )}
     >
       <div className={clsx(

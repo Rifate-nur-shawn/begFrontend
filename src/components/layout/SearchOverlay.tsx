@@ -45,7 +45,7 @@ export default function SearchOverlay() {
                     placeholder="WHAT ARE YOU LOOKING FOR?"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full bg-transparent font-display text-4xl md:text-6xl lg:text-7xl placeholder:text-neutral-200 text-black focus:outline-none uppercase border-b border-neutral-100 pb-8 transition-colors focus:border-black"
+                    className="w-full bg-transparent font-display text-4xl md:text-6xl lg:text-7xl placeholder:text-black text-black focus:outline-none uppercase border-b border-neutral-100 pb-8 transition-colors focus:border-black"
                  />
              </div>
              
@@ -57,7 +57,7 @@ export default function SearchOverlay() {
                 className="grid grid-cols-1 md:grid-cols-12 gap-12"
              >
                  <div className="md:col-span-4">
-                     <p className="font-utility text-[10px] text-neutral-400 uppercase tracking-[0.2em] mb-6">Trending Now</p>
+                     <p className="font-utility text-[10px] text-black uppercase tracking-[0.2em] mb-6">Trending Now</p>
                      <div className="flex flex-col items-start gap-4">
                          {["New Arrivals", "Leather Goods", "Summer Collection", "Accessories"].map((tag, i) => (
                              <button key={i} className="font-display text-xl md:text-2xl text-neutral-600 hover:text-black hover:translate-x-2 transition-all duration-300">
@@ -68,7 +68,7 @@ export default function SearchOverlay() {
                  </div>
 
                  <div className="md:col-span-8">
-                     <p className="font-utility text-[10px] text-neutral-400 uppercase tracking-[0.2em] mb-6">Suggested</p>
+                     <p className="font-utility text-[10px] text-black uppercase tracking-[0.2em] mb-6">Suggested</p>
                      {/* Mock Results */}
                      <div className="grid grid-cols-2 gap-4">
                         <div className="aspect-[3/4] bg-neutral-100 relative group cursor-pointer overflow-hidden">
