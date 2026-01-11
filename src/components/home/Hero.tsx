@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,19 +12,27 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  // Smooth spring physics for buttery scroll animations
+  const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
+  
+  const rawY = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const rawOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const rawScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  
+  // Apply spring for smooth, luxury feel
+  const y = useSpring(rawY, springConfig);
+  const opacity = useSpring(rawOpacity, springConfig);
+  const scale = useSpring(rawScale, springConfig);
 
   return (
     <div 
       ref={containerRef} 
-      className="relative h-screen w-full overflow-hidden -mt-20"
+      className="relative h-screen w-full overflow-hidden -mt-16"
     >
-      {/* Full-screen Background Image */}
+      {/* Full-screen Background Image with Parallax */}
       <motion.div 
         style={{ y, scale }} 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 will-change-transform"
       >
         <Image
           src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
@@ -33,23 +41,26 @@ export default function Hero() {
           className="object-cover object-center"
           priority
           sizes="100vw"
-          quality={90}
+          quality={95}
         />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Sophisticated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       </motion.div>
 
       {/* Content */}
       <motion.div 
         style={{ opacity }}
-        className="relative z-10 h-full flex flex-col justify-end items-center text-center px-6 pb-24"
+        className="relative z-10 h-full flex flex-col justify-end items-center text-center px-6 pb-28"
       >
         <div className="overflow-hidden">
           <motion.h1 
-            initial={{ y: "100%" }}
+            initial={{ y: "110%" }}
             animate={{ y: 0 }}
-            transition={{ duration: 1, ease: [0.33, 1, 0.68, 1], delay: 0.2 }}
-            className="font-display text-5xl md:text-8xl lg:text-9xl tracking-tight text-white mb-6 drop-shadow-lg"
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+            className="font-display text-5xl md:text-8xl lg:text-[10rem] tracking-tight text-white mb-6"
+            style={{
+              textShadow: "0 4px 30px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)"
+            }}
           >
             The New Era
           </motion.h1>
@@ -57,27 +68,30 @@ export default function Hero() {
         
         <div className="overflow-hidden">
           <motion.p 
-            initial={{ y: "100%" }}
+            initial={{ y: "110%" }}
             animate={{ y: 0 }}
-            transition={{ duration: 1, ease: [0.33, 1, 0.68, 1], delay: 0.4 }}
-            className="font-utility text-sm md:text-base tracking-[0.15em] uppercase text-white/90 mb-10 max-w-lg"
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
+            className="font-utility text-sm md:text-base tracking-[0.2em] uppercase text-white/85 mb-12 max-w-lg"
+            style={{
+              textShadow: "0 2px 20px rgba(0,0,0,0.5)"
+            }}
           >
             Redefining modern luxury through craftsmanship
           </motion.p>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.9 }}
         >
           <Link 
             href="/collections/new-arrivals"
-            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-utility text-xs tracking-widest uppercase overflow-hidden transition-all duration-300 hover:bg-white/90"
+            className="group relative inline-flex items-center gap-3 px-10 py-5 bg-white/95 backdrop-blur-sm text-black font-utility text-xs tracking-[0.15em] uppercase overflow-hidden transition-all duration-500 hover:bg-white hover:scale-[1.02] hover:shadow-2xl"
           >
-            <span className="relative z-10">Explore Collection</span>
+            <span className="relative z-10 font-medium">Explore Collection</span>
             <svg 
-              className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" 
+              className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-2" 
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor"
@@ -88,17 +102,18 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* Elegant Scroll Indicator */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        transition={{ delay: 2, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3"
       >
+        <span className="font-utility text-[9px] tracking-[0.3em] uppercase text-white/60">Scroll</span>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-[1px] h-12 bg-white/50"
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-10 bg-gradient-to-b from-white/60 to-transparent"
         />
       </motion.div>
     </div>
