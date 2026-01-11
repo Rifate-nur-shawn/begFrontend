@@ -118,7 +118,7 @@ export default function MenuOverlay() {
                              animate={{ opacity: 1 }}
                              className="w-full h-full flex items-center justify-center border border-neutral-100"
                         >
-                            <p className="font-display text-4xl text-neutral-200">BegOnShop</p>
+                            <p className="font-display text-4xl text-neutral-200">Velancis</p>
                         </motion.div>
                     )}
                  </AnimatePresence>
@@ -130,7 +130,7 @@ export default function MenuOverlay() {
                     <a href="#" className="hover:text-primary">Instagram</a>
                     <a href="#" className="hover:text-primary">TikTok</a>
                 </div>
-                <p>BegOnShop &copy; 2026</p>
+                <p>Velancis &copy; 2026</p>
              </motion.div>
  
           </motion.div>

@@ -74,7 +74,10 @@ export default function Header() {
         {/* Left: Menu Trigger */}
         <button
           onClick={toggleMenu}
-          className="font-utility text-xs tracking-widest uppercase hover:underline underline-offset-4"
+          className={clsx(
+            "font-utility text-xs tracking-widest uppercase hover:underline underline-offset-4",
+            isOverlayOpen ? "text-primary" : ""
+          )}
         >
           {isMenuOpen ? "Close" : "Menu"}
         </button>
@@ -82,7 +85,7 @@ export default function Header() {
         {/* Center: Logo - Hide if overlay is open on mobile to avoid clutter, or keep it. Keeping it. */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
           <h1 className="font-display text-2xl md:text-4xl tracking-tight font-bold">
-            BegOnShop
+            Velancis
           </h1>
         </Link>
 

@@ -54,7 +54,7 @@ export default function CheckoutPage() {
         });
         
         clearCart();
-        alert("Order placed successfully! Welcome to BegOnShop.");
+        alert("Order placed successfully! Welcome to Velancis.");
         router.push("/account"); // Redirect to account orders
     } catch (err) {
         console.error("Checkout failed", err);

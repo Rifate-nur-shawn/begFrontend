@@ -29,7 +29,7 @@ export const MENU_DATA: MenuSection[] = [
     ],
   },
   {
-    title: "BegOnShop",
+    title: "Velancis",
     items: [
       { label: "Our Story", href: "/about", image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070" },
       { label: "The Campaign", href: "/campaign", image: "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=2070" },

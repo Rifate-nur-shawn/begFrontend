@@ -6,7 +6,7 @@
   --color-accent-subtle: #E5E5E5;
   --color-accent-alert: #D93F3F;
 
-  --font-display: var(--font-bodoni-moda), serif;
+  --font-display: var(--font-display), serif;
   --font-utility: var(--font-inter), sans-serif;
 }
 

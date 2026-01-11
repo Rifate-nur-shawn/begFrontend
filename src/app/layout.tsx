@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Inter } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Header from "@/components/layout/Header";
 import MenuOverlay from "@/components/layout/MenuOverlay";
@@ -10,8 +10,8 @@ import Providers from "@/components/providers/Providers";
 import LoginModal from "@/components/auth/LoginModal";
 import "./globals.css";
 
-const bodoni = Bodoni_Moda({
-  variable: "--font-bodoni-moda",
+const playfair = Playfair_Display({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
@@ -23,7 +23,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BegOnShop",
+  title: "Velancis",
   description: "Modern Luxury Bag E-commerce",
 };
 
@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${bodoni.variable} ${inter.variable} antialiased`}
+        className={`${playfair.variable} ${inter.variable} antialiased`}
       >
         <Providers>
             <SmoothScroll>

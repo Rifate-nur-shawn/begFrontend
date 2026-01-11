@@ -9,7 +9,7 @@ export default function AboutPage() {
        <div className="max-w-[1920px] mx-auto px-4 md:px-12 mb-32">
             <div className="max-w-4xl">
                 <TextReveal className="font-display text-4xl md:text-7xl leading-tight mb-8">
-                    BegOnShop redefines modern luxury through a synthesis of structure, void, and pure materiality.
+                    Velancis redefines modern luxury through a synthesis of structure, void, and pure materiality.
                 </TextReveal>
                 <TextReveal className="font-utility text-sm md:text-lg uppercase tracking-widest text-neutral-500" delay={0.5}>
                     ESTABLISHED 2026. DIGITAL NATIVE.

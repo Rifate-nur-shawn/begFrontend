@@ -10,7 +10,7 @@ export default function Footer() {
         {/* Brand Column */}
         <div className="md:col-span-1">
           <Link href="/" className="font-display text-2xl text-white block mb-6">
-            BegOnShop
+            Velancis
           </Link>
           <p className="font-utility text-xs leading-relaxed uppercase tracking-widest max-w-xs">
             Redefining modern luxury through structure and void.
@@ -60,7 +60,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-[1920px] mx-auto mt-24 pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between font-utility text-[10px] uppercase tracking-widest">
-        <p>&copy; 2026 BegOnShop. All rights reserved.</p>
+        <p>&copy; 2026 Velancis. All rights reserved.</p>
         <div className="flex gap-6 mt-4 md:mt-0">
             <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white">Terms of Service</Link>
