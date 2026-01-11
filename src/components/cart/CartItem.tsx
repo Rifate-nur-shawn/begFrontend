@@ -5,7 +5,7 @@ import { useCartStore, CartItem as CartItemType } from "@/store/cart-store";
 import { motion } from "framer-motion";
 
 export default function CartItem({ item }: { item: CartItemType }) {
-  const { removeItem } = useCartStore();
+  const { removeItem, updateQuantity } = useCartStore();
 
   return (
     <motion.div 
@@ -31,7 +31,28 @@ export default function CartItem({ item }: { item: CartItemType }) {
           </p>
         </div>
         <div className="flex justify-between items-end">
-          <p className="font-utility text-xs">${item.price.toLocaleString()}</p>
+          <div className="flex flex-col gap-1">
+             <p className="font-utility text-xs text-primary">${item.price.toLocaleString()}</p>
+             
+             {/* Quantity Controls */}
+             <div className="flex items-center gap-3 mt-1">
+                 <button 
+                    onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
+                    className="w-5 h-5 flex items-center justify-center border border-neutral-200 text-primary font-utility text-[10px] hover:bg-neutral-100 transition-colors"
+                    disabled={item.quantity <= 1}
+                 >
+                    -
+                 </button>
+                 <span className="font-utility text-xs text-primary w-3 text-center">{item.quantity}</span>
+                 <button 
+                    onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                     className="w-5 h-5 flex items-center justify-center border border-neutral-200 text-primary font-utility text-[10px] hover:bg-neutral-100 transition-colors"
+                 >
+                    +
+                 </button>
+             </div>
+          </div>
+          
           <button 
             onClick={() => removeItem(item.id, item.size)}
             className="font-utility text-[10px] uppercase text-neutral-400 hover:text-alert transition-colors"
