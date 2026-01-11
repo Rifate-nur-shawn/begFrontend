@@ -6,12 +6,14 @@ import { useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { useUIStore } from "@/store/ui-store";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
 import clsx from "clsx";
 
 export default function Header() {
   const pathname = usePathname();
-  const { toggleMenu, isMenuOpen, openCart, openSearch, isSearchOpen, isCartOpen } = useUIStore();
+  const { toggleMenu, isMenuOpen, openCart, openSearch, isSearchOpen, isCartOpen, openLogin } = useUIStore();
   const { items } = useCartStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
 
@@ -70,6 +72,23 @@ export default function Header() {
             >
                 Bag ({items.length})
             </button>
+            
+             {isAuthenticated ? (
+                <button
+                    onClick={() => logout()}
+                    className="font-utility text-xs tracking-widest uppercase hover:underline underline-offset-4 text-accent-alert"
+                    title={user?.email}
+                >
+                    Logout
+                </button>
+            ) : (
+                <button 
+                    onClick={openLogin}
+                    className="font-utility text-xs tracking-widest uppercase hover:underline underline-offset-4"
+                >
+                    Login
+                </button>
+            )}
         </div>
       </div>
     </header>

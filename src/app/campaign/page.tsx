@@ -23,7 +23,7 @@ export default function CampaignPage() {
        <HorizontalScroll className="gap-12 pl-12 md:pl-32">
             {/* Title Card */}
              <div className="relative h-[60vh] w-[400px] md:w-[600px] flex items-end shrink-0">
-                 <p className="font-display text-6xl md:text-8xl text-white">
+                 <p className="font-display text-6xl md:text-8xl text-primary">
                     FALL<br/>WINTER
                  </p>
              </div>
@@ -37,7 +37,7 @@ export default function CampaignPage() {
                         fill
                         className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
                     />
-                    <span className="absolute -bottom-10 left-0 font-utility text-xs text-white uppercase tracking-widest">
+                    <span className="absolute -bottom-10 left-0 font-utility text-xs text-primary uppercase tracking-widest">
                         {img.caption}
                     </span>
                 </div>

@@ -6,6 +6,8 @@ import MenuOverlay from "@/components/layout/MenuOverlay";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchOverlay from "@/components/layout/SearchOverlay";
 import Footer from "@/components/layout/Footer";
+import Providers from "@/components/providers/Providers";
+import LoginModal from "@/components/auth/LoginModal";
 import "./globals.css";
 
 const bodoni = Bodoni_Moda({
@@ -35,16 +37,19 @@ export default function RootLayout({
       <body
         className={`${bodoni.variable} ${inter.variable} antialiased`}
       >
-        <SmoothScroll>
-            <Header />
-            <MenuOverlay />
-            <CartDrawer />
-            <SearchOverlay />
-            <main className="pt-24 min-h-screen">
-                {children}
-            </main>
-            <Footer />
-        </SmoothScroll>
+        <Providers>
+            <SmoothScroll>
+                <Header />
+                <MenuOverlay />
+                <CartDrawer />
+                <SearchOverlay />
+                <LoginModal />
+                <main className="pt-24 min-h-screen">
+                    {children}
+                </main>
+                <Footer />
+            </SmoothScroll>
+        </Providers>
       </body>
     </html>
   );

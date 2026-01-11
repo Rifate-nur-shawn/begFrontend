@@ -4,6 +4,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
+import api from "@/lib/api/axios";
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCartStore();
@@ -19,16 +20,48 @@ export default function CheckoutPage() {
      }
   }
 
+// State for form
+  const [formData, setFormData] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    phone: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    clearCart();
-    alert("Order placed successfully! Welcome to BegOnShop.");
-    router.push("/");
+    try {
+        await api.post('/checkout', {
+            address: {
+                email: formData.email,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                street: formData.address,
+                city: formData.city,
+                zip: formData.postalCode,
+                phone: formData.phone
+            },
+            paymentMethod: "stripe" // Mock payment method
+        });
+        
+        clearCart();
+        alert("Order placed successfully! Welcome to BegOnShop.");
+        router.push("/account"); // Redirect to account orders
+    } catch (err) {
+        console.error("Checkout failed", err);
+        alert("Failed to place order. Please try again.");
+    } finally {
+        setIsProcessing(false);
+    }
   };
 
   return (
@@ -37,32 +70,34 @@ export default function CheckoutPage() {
         
         {/* Left: Form */}
         <div className="md:col-span-7">
-             <h1 className="font-display text-4xl mb-12">Checkout</h1>
-             
-             {/* Section: Contact */}
-             <div className="mb-12">
-                <h2 className="font-utility text-xs uppercase tracking-widest text-neutral-500 mb-6 border-b border-neutral-200 pb-2">Contact Information</h2>
-                <div className="space-y-4">
-                    <input type="email" placeholder="Email Address" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                    <div className="grid grid-cols-2 gap-4">
-                        <input type="text" placeholder="First Name" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                        <input type="text" placeholder="Last Name" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+             <form id="checkout-form" onSubmit={handleOrder}>
+                 <h1 className="font-display text-4xl mb-12">Checkout</h1>
+                 
+                 {/* Section: Contact */}
+                 <div className="mb-12">
+                    <h2 className="font-utility text-xs uppercase tracking-widest text-neutral-500 mb-6 border-b border-neutral-200 pb-2">Contact Information</h2>
+                    <div className="space-y-4">
+                        <input name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="Email Address" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <input name="firstName" value={formData.firstName} onChange={handleInputChange} type="text" placeholder="First Name" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                            <input name="lastName" value={formData.lastName} onChange={handleInputChange} type="text" placeholder="Last Name" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                        </div>
                     </div>
-                </div>
-             </div>
+                 </div>
 
-             {/* Section: Shipping */}
-             <div className="mb-12">
-                <h2 className="font-utility text-xs uppercase tracking-widest text-neutral-500 mb-6 border-b border-neutral-200 pb-2">Shipping Details</h2>
-                <div className="space-y-4">
-                     <input type="text" placeholder="Address" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                     <div className="grid grid-cols-2 gap-4">
-                        <input type="text" placeholder="City" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                        <input type="text" placeholder="Postal Code" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                     </div>
-                     <input type="text" placeholder="Phone" className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
-                </div>
-             </div>
+                 {/* Section: Shipping */}
+                 <div className="mb-12">
+                    <h2 className="font-utility text-xs uppercase tracking-widest text-neutral-500 mb-6 border-b border-neutral-200 pb-2">Shipping Details</h2>
+                    <div className="space-y-4">
+                         <input name="address" value={formData.address} onChange={handleInputChange} type="text" placeholder="Address" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                         <div className="grid grid-cols-2 gap-4">
+                            <input name="city" value={formData.city} onChange={handleInputChange} type="text" placeholder="City" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                            <input name="postalCode" value={formData.postalCode} onChange={handleInputChange} type="text" placeholder="Postal Code" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                         </div>
+                         <input name="phone" value={formData.phone} onChange={handleInputChange} type="text" placeholder="Phone" required className="w-full bg-transparent border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors font-utility text-sm placeholder:text-neutral-400" />
+                    </div>
+                 </div>
+             </form>
 
              {/* Section: Payment (Mock) */}
              <div className="mb-12">
