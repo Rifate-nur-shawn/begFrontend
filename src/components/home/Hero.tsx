@@ -43,14 +43,14 @@ export default function Hero() {
           sizes="100vw"
           quality={95}
         />
-        {/* Sophisticated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+        {/* Darker overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/50" />
       </motion.div>
 
-      {/* Content */}
+      {/* Content - CENTERED */}
       <motion.div 
         style={{ opacity }}
-        className="relative z-10 h-full flex flex-col justify-end items-center text-center px-6 pb-28"
+        className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6"
       >
         <div className="overflow-hidden">
           <motion.h1 
