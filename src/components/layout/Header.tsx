@@ -28,34 +28,38 @@ export default function Header() {
   // Calculate if any overlay is open (Menu, Cart, Search)
   const isOverlayOpen = isMenuOpen || isCartOpen || isSearchOpen;
 
-  // Determine text color: 
-  // - White on Home Hero (unscrolled)
-  // - White when scrolled (Dark navbar)
-  // - Black on other pages when not scrolled (unless we want dark navbar everywhere? User complained about scroll specifically)
-  // Let's make it simple: 
-  // Scrolled -> White text (background is dark)
-  // Unscrolled Home -> White text (background transparent on dark image)
-  // Unscrolled Other -> Black text (background transparent on white canvas)
+  // Luxury Brand Logic:
+  // 1. Top of Homepage (Hero): Transparent BG, White Text.
+  // 2. Top of Internal Pages: Transparent BG, Black Text (assuming white pages).
+  // 3. Scrolled (Anywhere): Solid Black BG, White Text, Reduced vertical padding.
   
-  const isScrolledDark = isScrolled && !isOverlayOpen;
-  const isHomeHero = pathname === "/" && !isScrolled && !isOverlayOpen;
+  // Logic helpers
+  const isHomePage = pathname === "/";
+  const isScrolledState = isScrolled && !isOverlayOpen;
+
+  // Text Color Logic
+  let textColorClass = "text-primary"; // Default (Black)
   
-  // If overlay is open, we usually want black text on white overlay, BUT our overlays might different.
-  // Menu/Cart are drawers. Search is overlay. 
-  // Let's stick to: if Scrolled OR HomeHero -> White. Else -> Primary.
-  
-  const shouldUseWhiteText = isScrolledDark || isHomeHero;
-  const textColorClass = shouldUseWhiteText ? "text-white" : "text-primary";
+  if (isScrolledState) {
+      textColorClass = "text-white"; // White when scrolled (on Black BG)
+  } else if (isHomePage) {
+      textColorClass = "text-white"; // White on Home Hero
+  } else if (isOverlayOpen) {
+      textColorClass = "text-primary"; // Black on white overlay
+  } 
+  // Else (Internal page at top) -> Default Black
 
   return (
     <header
       className={clsx(
-        "fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b border-transparent",
-        isScrolledDark ? "bg-black/90 backdrop-blur-md py-4 border-white/10" : "bg-transparent py-6"
+        "fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] border-b border-transparent",
+        isScrolledState 
+            ? "bg-[#050505] py-4 shadow-[0_1px_0_0_rgba(255,255,255,0.1)]" // Premium Dark
+            : "bg-transparent py-8" // Spacious at top
       )}
     >
       <div className={clsx(
-        "max-w-[1920px] mx-auto px-6 md:px-12 flex justify-between items-center relative z-[100]",
+        "max-w-[1920px] mx-auto px-6 md:px-12 flex justify-between items-center relative z-[100] transition-colors duration-500",
         textColorClass
       )}>
         {/* Left: Menu Trigger */}

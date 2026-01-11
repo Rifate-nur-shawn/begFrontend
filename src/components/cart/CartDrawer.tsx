@@ -41,14 +41,14 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 250 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-canvas z-[70] shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-canvas text-primary z-[70] shadow-2xl flex flex-col"
           >
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-neutral-100">
               <h2 className="font-display text-xl">Shopping Bag ({items.length})</h2>
               <button
                 onClick={closeCart}
-                className="font-utility text-xs uppercase tracking-widest hover:text-neutral-500"
+                className="font-utility text-xs uppercase tracking-widest text-primary hover:text-neutral-500"
               >
                 Close
               </button>

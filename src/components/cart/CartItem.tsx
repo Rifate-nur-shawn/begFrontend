@@ -25,7 +25,7 @@ export default function CartItem({ item }: { item: CartItemType }) {
       </div>
       <div className="flex flex-col justify-between flex-grow">
         <div>
-          <h4 className="font-display text-sm uppercase tracking-wide">{item.name}</h4>
+          <h4 className="font-display text-sm uppercase tracking-wide text-primary">{item.name}</h4>
           <p className="font-utility text-[10px] text-neutral-500 uppercase mt-1">
             Size: {item.size}
           </p>
