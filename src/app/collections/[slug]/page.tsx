@@ -47,7 +47,7 @@ export default function CategoryPage() {
     }, [slug]);
 
     return (
-        <div className="min-h-screen pt-32 pb-24 px-4 md:px-12 bg-canvas">
+        <div className="min-h-screen pt-32 pb-24 px-4 md:px-12 bg-canvas text-primary">
             <div className="max-w-[1920px] mx-auto">
                 {/* Header */}
                 <div className="mb-16 text-center">

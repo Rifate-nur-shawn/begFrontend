@@ -75,7 +75,7 @@ export default function AccountPage() {
     }
 
     return (
-        <div className="min-h-screen pt-32 pb-24 px-4 md:px-12 bg-canvas">
+        <div className="min-h-screen pt-32 pb-24 px-4 md:px-12 bg-canvas text-primary">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-12">
                     <h1 className="font-display text-4xl mb-2">My Account</h1>

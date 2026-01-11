@@ -69,7 +69,7 @@ export default function ProductPage() {
     };
 
     return (
-        <div className="min-h-screen bg-canvas pt-32 pb-24 px-4 md:px-12">
+        <div className="min-h-screen bg-canvas text-primary pt-32 pb-24 px-4 md:px-12">
             <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
                 {/* Images Section */}
                 <div className="space-y-4">
