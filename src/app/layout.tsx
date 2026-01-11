@@ -43,7 +43,6 @@ export default function RootLayout({
                 <MenuOverlay />
                 <CartDrawer />
                 <SearchOverlay />
-                <LoginModal />
                 <main className="pt-24 min-h-screen">
                     {children}
                 </main>

@@ -35,6 +35,7 @@ export default function Header() {
   
   // Logic helpers
   const isHomePage = pathname === "/";
+  const isLoginPage = pathname === "/login";
   const isScrolledState = isScrolled && !isOverlayOpen;
 
   // Text Color Logic
@@ -44,18 +45,26 @@ export default function Header() {
       textColorClass = "text-white"; // White when scrolled (on Black BG)
   } else if (isHomePage) {
       textColorClass = "text-white"; // White on Home Hero
+  } else if (isLoginPage) {
+      textColorClass = "text-white"; // White on Login Page (dark bg)
   } else if (isOverlayOpen) {
       textColorClass = "text-primary"; // Black on white overlay
   } 
   // Else (Internal page at top) -> Default Black
 
+  // Header Background Logic
+  let headerBgClass = "bg-transparent py-8"; // Default
+  if (isScrolledState) {
+      headerBgClass = "bg-[#050505] py-4 shadow-[0_1px_0_0_rgba(255,255,255,0.1)]";
+  } else if (isLoginPage) {
+      headerBgClass = "bg-[#0a0a0a] py-6"; // Solid dark for login page
+  }
+
   return (
     <header
       className={clsx(
         "fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] border-b border-transparent",
-        isScrolledState 
-            ? "bg-[#050505] py-4 shadow-[0_1px_0_0_rgba(255,255,255,0.1)]" // Premium Dark
-            : "bg-transparent py-8" // Spacious at top
+        headerBgClass
       )}
     >
       <div className={clsx(
@@ -101,12 +110,12 @@ export default function Header() {
                     Logout
                 </button>
             ) : (
-                <button 
-                    onClick={openLogin}
+                <Link 
+                    href="/login"
                     className="font-utility text-xs tracking-widest uppercase hover:underline underline-offset-4"
                 >
                     Login
-                </button>
+                </Link>
             )}
         </div>
       </div>
