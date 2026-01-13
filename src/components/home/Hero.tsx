@@ -1,9 +1,19 @@
 "use client";
 
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import api from "@/lib/api/axios";
+
+interface Product {
+    id: string;
+    name: string;
+    slug: string;
+    media?: {
+        images?: string[];
+    };
+}
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,6 +21,25 @@ export default function Hero() {
     target: containerRef,
     offset: ["start start", "end start"],
   });
+
+  const [heroImage, setHeroImage] = useState<string>("/products/product_saree_red_1768316591404.png");
+  const [productName, setProductName] = useState<string>("The New Era");
+
+  useEffect(() => {
+    async function fetchFeaturedProduct() {
+      try {
+        const { data } = await api.get('/products', { params: { limit: 1 } });
+        const product = data.data?.[0] as Product | undefined;
+        if (product?.media?.images?.[0]) {
+          setHeroImage(product.media.images[0]);
+          setProductName(product.name);
+        }
+      } catch (error) {
+        console.error("Failed to fetch featured product for hero", error);
+      }
+    }
+    fetchFeaturedProduct();
+  }, []);
 
   // Smooth spring physics for buttery scroll animations
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
@@ -35,8 +64,8 @@ export default function Hero() {
         className="absolute inset-0 z-0 will-change-transform"
       >
         <Image
-          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
-          alt="Luxury Fashion"
+          src={heroImage}
+          alt={productName}
           fill
           className="object-cover object-center"
           priority
@@ -44,7 +73,7 @@ export default function Hero() {
           quality={95}
         />
         {/* Darker overlay for better text visibility */}
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
       </motion.div>
 
       {/* Content - CENTERED */}
@@ -86,7 +115,7 @@ export default function Hero() {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.9 }}
         >
           <Link 
-            href="/collections/new-arrivals"
+            href="/collections/sarees"
             className="group relative inline-flex items-center gap-3 px-10 py-5 bg-white/95 backdrop-blur-sm text-black font-utility text-xs tracking-[0.15em] uppercase overflow-hidden transition-all duration-500 hover:bg-white hover:scale-[1.02] hover:shadow-2xl"
           >
             <span className="relative z-10 font-medium">Explore Collection</span>

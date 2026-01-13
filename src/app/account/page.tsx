@@ -8,7 +8,7 @@ import api from "@/lib/api/axios";
 import { motion } from "framer-motion";
 
 export default function AccountPage() {
-    const { isAuthenticated, user, isLoading } = useAuthStore();
+    const { isAuthenticated, user, isLoading, logout } = useAuthStore();
     const { openLogin } = useUIStore();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<"orders" | "addresses">("orders");
@@ -77,11 +77,19 @@ export default function AccountPage() {
     return (
         <div className="min-h-screen pt-32 pb-24 px-4 md:px-12 bg-canvas text-primary">
             <div className="max-w-4xl mx-auto">
-                <header className="mb-12">
-                    <h1 className="font-display text-4xl mb-2">My Account</h1>
-                    <p className="font-utility text-xs tracking-widest uppercase text-neutral-500">
-                        Hello, {user?.email}
-                    </p>
+                <header className="mb-12 flex justify-between items-start">
+                    <div>
+                        <h1 className="font-display text-4xl mb-2">My Account</h1>
+                        <p className="font-utility text-xs tracking-widest uppercase text-neutral-500">
+                            Hello, {user?.email}
+                        </p>
+                    </div>
+                    <button 
+                        onClick={() => logout()}
+                        className="font-utility text-xs tracking-widest uppercase text-neutral-500 hover:text-primary border border-neutral-300 px-4 py-2 hover:border-primary transition-colors"
+                    >
+                        Sign Out
+                    </button>
                 </header>
 
                 <div className="flex gap-8 mb-12 border-b border-neutral-200 pb-4">

@@ -68,7 +68,7 @@ export const useCartStore = create<CartState>()(
                  quantity: item.quantity,
                  size: "One Size", // Backend doesn't support yet, default
                  color: "Default", // Backend doesn't support yet
-                 image: image || "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=2069", // Fallback
+                 image: image || "/products/product_saree_red_1768316591404.png", // Fallback
              };
           });
           set({ items: mappedItems });

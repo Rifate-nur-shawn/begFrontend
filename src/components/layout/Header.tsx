@@ -86,13 +86,13 @@ export default function Header() {
           </button>
           
           {isAuthenticated ? (
-            <button
-              onClick={() => logout()}
+            <Link
+              href="/account"
               className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60"
               title={user?.email}
             >
               Account
-            </button>
+            </Link>
           ) : (
             <Link 
               href="/login"
