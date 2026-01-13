@@ -5,60 +5,33 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import api from "@/lib/api/axios";
+import { useProduct } from "@/lib/api/products-hooks";
 import { useCartStore } from "@/store/cart-store";
 import { useUIStore } from "@/store/ui-store";
-
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    description: string;
-    basePrice: number;
-    salePrice?: number;
-    media?: {
-        images?: string[];
-    };
-    category?: {
-        name: string;
-        slug: string;
-    };
-    specifications?: Record<string, string>;
-}
 
 export default function ProductPage() {
     const params = useParams();
     const slug = params?.slug as string;
     
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
+    // Use SWR hook for cached data loading
+    const { product, isLoading } = useProduct(slug);
+    
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [isAdded, setIsAdded] = useState(false);
     const { addItem } = useCartStore();
     const { openCart } = useUIStore();
 
+    // Reset image index when product changes
     useEffect(() => {
-        if (!slug) return;
-        async function fetchProduct() {
-            setLoading(true);
-            try {
-                const { data } = await api.get(`/products/${slug}`);
-                setProduct(data);
-            } catch (err) {
-                console.error("Failed to fetch product", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchProduct();
-    }, [slug]);
+        setSelectedImageIndex(0);
+    }, [product?.id]);
 
     // Loading state with luxury skeleton
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="min-h-screen bg-canvas pt-32 pb-24 px-4 md:px-12">
-                <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
-                    <div className="space-y-4">
+                <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+                    <div className="lg:col-span-7 space-y-4">
                         <div className="aspect-[3/4] bg-neutral-100 animate-pulse" />
                         <div className="grid grid-cols-4 gap-2">
                             {[1,2,3,4].map(i => (
@@ -66,7 +39,7 @@ export default function ProductPage() {
                             ))}
                         </div>
                     </div>
-                    <div className="space-y-6 pt-8">
+                    <div className="lg:col-span-5 space-y-6 pt-8">
                         <div className="h-4 w-24 bg-neutral-100 animate-pulse" />
                         <div className="h-16 w-3/4 bg-neutral-100 animate-pulse" />
                         <div className="h-6 w-32 bg-neutral-100 animate-pulse" />
@@ -141,7 +114,7 @@ export default function ProductPage() {
                             key={selectedImageIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ duration: 0.4 }}
+                            transition={{ duration: 0.3 }}
                             className="relative aspect-[3/4] w-full bg-neutral-50 overflow-hidden group cursor-zoom-in"
                         >
                             <Image
@@ -197,7 +170,7 @@ export default function ProductPage() {
                             <motion.h1 
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
+                                transition={{ delay: 0.15 }}
                                 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[0.95]"
                             >
                                 {product.name}
@@ -207,7 +180,7 @@ export default function ProductPage() {
                             <motion.div 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
+                                transition={{ delay: 0.2 }}
                                 className="flex items-baseline gap-4"
                             >
                                 <span className="font-utility text-2xl tracking-wide">
@@ -224,7 +197,7 @@ export default function ProductPage() {
                             <motion.div 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
+                                transition={{ delay: 0.25 }}
                                 className="font-utility text-sm leading-[1.8] text-neutral-600 max-w-lg"
                             >
                                 {product.description}
@@ -237,7 +210,7 @@ export default function ProductPage() {
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
+                                transition={{ delay: 0.3 }}
                             >
                                 <button
                                     onClick={handleAddToCart}
@@ -260,7 +233,7 @@ export default function ProductPage() {
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ delay: 0.6 }}
+                                transition={{ delay: 0.35 }}
                                 className="space-y-4 pt-4"
                             >
                                 {/* Specifications */}

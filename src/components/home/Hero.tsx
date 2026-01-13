@@ -1,19 +1,10 @@
 "use client";
 
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import api from "@/lib/api/axios";
-
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    media?: {
-        images?: string[];
-    };
-}
+import { useFeaturedProducts } from "@/lib/api/products-hooks";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,24 +13,11 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const [heroImage, setHeroImage] = useState<string>("/products/product_saree_red_1768316591404.png");
-  const [productName, setProductName] = useState<string>("The New Era");
-
-  useEffect(() => {
-    async function fetchFeaturedProduct() {
-      try {
-        const { data } = await api.get('/products', { params: { limit: 1 } });
-        const product = data.data?.[0] as Product | undefined;
-        if (product?.media?.images?.[0]) {
-          setHeroImage(product.media.images[0]);
-          setProductName(product.name);
-        }
-      } catch (error) {
-        console.error("Failed to fetch featured product for hero", error);
-      }
-    }
-    fetchFeaturedProduct();
-  }, []);
+  // Use SWR for cached product data
+  const { products, isLoading } = useFeaturedProducts(1);
+  const featuredProduct = products[0];
+  
+  const heroImage = featuredProduct?.media?.images?.[0] || "/products/product_saree_red_1768316591404.png";
 
   // Smooth spring physics for buttery scroll animations
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
@@ -63,15 +41,19 @@ export default function Hero() {
         style={{ y, scale }} 
         className="absolute inset-0 z-0 will-change-transform"
       >
-        <Image
-          src={heroImage}
-          alt={productName}
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-          quality={95}
-        />
+        {isLoading ? (
+          <div className="w-full h-full bg-neutral-200 animate-pulse" />
+        ) : (
+          <Image
+            src={heroImage}
+            alt="Luxury Fashion"
+            fill
+            className="object-cover object-center"
+            priority
+            sizes="100vw"
+            quality={90}
+          />
+        )}
         {/* Darker overlay for better text visibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
       </motion.div>
