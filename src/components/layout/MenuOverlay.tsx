@@ -54,25 +54,25 @@ export default function MenuOverlay() {
           initial="closed"
           animate="open"
           exit="closed"
-          className="fixed inset-0 z-40 bg-canvas text-primary flex flex-col pt-32 px-6 md:px-12 h-screen overflow-hidden"
+          className="fixed inset-0 z-40 bg-[#FAFAFA] text-[#1a1a1a] flex flex-col pt-28 px-8 md:px-16 lg:px-24 h-screen overflow-hidden"
         >
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 md:grid-cols-12 gap-12 w-full max-w-[1920px] mx-auto h-full"
+            className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 w-full max-w-[1600px] mx-auto h-full"
           >
             {/* Links Columns */}
-            <div className="md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="md:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-16">
                 {MENU_DATA.map((section) => (
-                <div key={section.title} className="flex flex-col space-y-6">
+                <div key={section.title} className="flex flex-col">
                     <motion.h3
                     variants={itemVariants}
-                    className="font-utility text-xs tracking-widest uppercase text-neutral-400 border-b border-accent-subtle pb-2"
+                    className="font-utility text-[10px] font-semibold tracking-[0.3em] uppercase text-[#888] mb-8"
                     >
                     {section.title}
                     </motion.h3>
-                    <ul className="space-y-4">
+                    <ul className="space-y-3">
                     {section.items.map((item) => (
                         <motion.li key={item.label} variants={itemVariants}>
                         <Link
@@ -80,8 +80,10 @@ export default function MenuOverlay() {
                             onClick={closeMenu}
                             onMouseEnter={() => item.image && setHoveredImage(item.image)}
                             onMouseLeave={() => setHoveredImage(null)}
-                            className={`block text-3xl md:text-5xl font-display hover:translate-x-4 transition-all duration-300 ${
-                            item.featured ? "text-primary italic" : "text-neutral-600 hover:text-primary"
+                            className={`group block text-[22px] md:text-[28px] font-display italic leading-relaxed transition-all duration-400 ease-out ${
+                            item.featured 
+                              ? "text-[#1a1a1a]" 
+                              : "text-[#555] hover:text-[#1a1a1a]"
                             }`}
                         >
                             {item.label}
@@ -94,16 +96,16 @@ export default function MenuOverlay() {
             </div>
             
             {/* Image Preview Column */}
-            <div className="hidden md:block md:col-span-4 h-[60vh] relative self-center">
+            <div className="hidden md:block md:col-span-5 h-[55vh] relative self-center">
                  <AnimatePresence mode="wait">
                     {hoveredImage ? (
                         <motion.div 
                             key={hoveredImage}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4 }}
-                            className="relative w-full h-full overflow-hidden bg-neutral-100"
+                            transition={{ duration: 0.5 }}
+                            className="relative w-full h-full overflow-hidden"
                         >
                              <Image 
                                 src={hoveredImage} 
@@ -116,19 +118,20 @@ export default function MenuOverlay() {
                         <motion.div 
                              initial={{ opacity: 0 }}
                              animate={{ opacity: 1 }}
-                             className="w-full h-full flex items-center justify-center border border-neutral-100"
+                             className="w-full h-full flex items-center justify-center bg-[#F0F0F0]"
                         >
-                            <p className="font-display text-4xl text-neutral-200">Velancis</p>
+                            <p className="font-display text-6xl text-[#D0D0D0] tracking-[0.3em] font-light">Velancis</p>
                         </motion.div>
                     )}
                  </AnimatePresence>
             </div>
 
             {/* Footer Links (Socials etc) */}
-             <motion.div variants={itemVariants} className="md:col-span-12 border-t border-neutral-100 pt-6 pb-6 mt-auto flex justify-between items-center font-utility text-[10px] uppercase tracking-widest text-neutral-500">
-                <div className="flex gap-4">
-                    <a href="#" className="hover:text-primary">Instagram</a>
-                    <a href="#" className="hover:text-primary">TikTok</a>
+             <motion.div variants={itemVariants} className="md:col-span-12 border-t border-[#E5E5E5] pt-6 pb-6 mt-auto flex justify-between items-center font-utility text-[9px] uppercase tracking-[0.25em] text-[#999]">
+                <div className="flex gap-8">
+                    <a href="#" className="hover:text-[#1a1a1a] transition-colors duration-300">Instagram</a>
+                    <a href="#" className="hover:text-[#1a1a1a] transition-colors duration-300">TikTok</a>
+                    <a href="#" className="hover:text-[#1a1a1a] transition-colors duration-300">Pinterest</a>
                 </div>
                 <p>Velancis &copy; 2026</p>
              </motion.div>

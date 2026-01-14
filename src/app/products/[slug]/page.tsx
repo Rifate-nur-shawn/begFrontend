@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProduct } from "@/lib/api/products-hooks";
 import { useCartStore } from "@/store/cart-store";
 import { useUIStore } from "@/store/ui-store";
@@ -13,37 +13,27 @@ export default function ProductPage() {
     const params = useParams();
     const slug = params?.slug as string;
     
-    // Use SWR hook for cached data loading
     const { product, isLoading } = useProduct(slug);
     
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [isAdded, setIsAdded] = useState(false);
+    const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
     const { addItem } = useCartStore();
     const { openCart } = useUIStore();
 
-    // Reset image index when product changes
     useEffect(() => {
         setSelectedImageIndex(0);
     }, [product?.id]);
 
-    // Loading state with luxury skeleton
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-canvas pt-32 pb-24 px-4 md:px-12">
-                <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-                    <div className="lg:col-span-7 space-y-4">
-                        <div className="aspect-[3/4] bg-neutral-100 animate-pulse" />
-                        <div className="grid grid-cols-4 gap-2">
-                            {[1,2,3,4].map(i => (
-                                <div key={i} className="aspect-square bg-neutral-100 animate-pulse" />
-                            ))}
-                        </div>
-                    </div>
-                    <div className="lg:col-span-5 space-y-6 pt-8">
-                        <div className="h-4 w-24 bg-neutral-100 animate-pulse" />
-                        <div className="h-16 w-3/4 bg-neutral-100 animate-pulse" />
-                        <div className="h-6 w-32 bg-neutral-100 animate-pulse" />
-                        <div className="h-32 w-full bg-neutral-100 animate-pulse" />
+            <div className="min-h-screen bg-[#FAFAF8] pt-24">
+                <div className="h-[calc(100vh-96px)] grid grid-cols-1 lg:grid-cols-5 gap-0">
+                    <div className="lg:col-span-3 bg-[#F0EDE8] animate-pulse" />
+                    <div className="lg:col-span-2 p-8 flex flex-col justify-center space-y-4">
+                        <div className="h-3 w-20 bg-[#E5E2DD] animate-pulse rounded" />
+                        <div className="h-10 w-3/4 bg-[#E5E2DD] animate-pulse rounded" />
+                        <div className="h-6 w-24 bg-[#E5E2DD] animate-pulse rounded" />
                     </div>
                 </div>
             </div>
@@ -52,25 +42,20 @@ export default function ProductPage() {
 
     if (!product) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-canvas gap-6">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAF8] gap-4">
                 <h1 className="font-display text-4xl">Product Not Found</h1>
-                <p className="font-utility text-xs tracking-widest text-neutral-500 uppercase">
-                    The product you&apos;re looking for doesn&apos;t exist
-                </p>
-                <Link 
-                    href="/collections/sarees" 
-                    className="font-utility text-xs tracking-widest uppercase border border-primary px-6 py-3 hover:bg-primary hover:text-white transition-colors"
-                >
-                    Browse Collection
+                <Link href="/collections/new-arrivals" className="text-sm underline hover:no-underline">
+                    ← Back to Collection
                 </Link>
             </div>
         );
     }
 
     const images = product.media?.images || [];
-    const currentImage = images[selectedImageIndex] || "/products/product_saree_red_1768316591404.png";
+    const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
     const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
     const hasDiscount = product.salePrice && product.salePrice < product.basePrice;
+    const discountPercent = hasDiscount ? Math.round((1 - product.salePrice / product.basePrice) * 100) : 0;
 
     const handleAddToCart = () => {
         addItem({
@@ -86,200 +71,268 @@ export default function ProductPage() {
         setTimeout(() => {
             openCart();
             setIsAdded(false);
-        }, 500);
+        }, 600);
+    };
+
+    const toggleAccordion = (id: string) => {
+        setActiveAccordion(activeAccordion === id ? null : id);
     };
 
     return (
-        <div className="min-h-screen bg-canvas text-primary">
-            {/* Breadcrumb */}
-            <div className="pt-28 pb-8 px-4 md:px-12 max-w-[1920px] mx-auto">
-                <nav className="font-utility text-[10px] tracking-widest uppercase text-neutral-500 flex gap-2">
-                    <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+        <div className="min-h-screen bg-[#FAFAF8]">
+            {/* Compact Breadcrumb - Part of Header */}
+            <div className="pt-24 px-4 lg:px-8 py-3 bg-[#FAFAF8]">
+                <nav className="text-[10px] tracking-[0.12em] uppercase text-neutral-400 flex items-center gap-1.5 max-w-[1800px] mx-auto">
+                    <Link href="/" className="hover:text-black transition-colors">Home</Link>
                     <span>/</span>
-                    <Link href="/collections/sarees" className="hover:text-primary transition-colors">
+                    <Link href={`/collections/${product.category?.slug || 'new-arrivals'}`} className="hover:text-black transition-colors">
                         {product.category?.name || "Collection"}
                     </Link>
                     <span>/</span>
-                    <span className="text-primary">{product.name}</span>
+                    <span className="text-neutral-600 truncate max-w-[200px]">{product.name}</span>
                 </nav>
             </div>
 
-            <div className="pb-24 px-4 md:px-12">
-                <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+            {/* Main Content - Optimized Split */}
+            <div className="px-4 lg:px-8 pb-8">
+                <div className="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
                     
-                    {/* Image Gallery - Left Side */}
-                    <div className="lg:col-span-7 space-y-4">
-                        {/* Main Image with Animation */}
-                        <motion.div 
-                            key={selectedImageIndex}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.3 }}
-                            className="relative aspect-[3/4] w-full bg-neutral-50 overflow-hidden group cursor-zoom-in"
-                        >
-                            <Image
-                                src={currentImage}
-                                alt={product.name}
-                                fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                priority
-                                sizes="(max-width: 1024px) 100vw, 60vw"
-                            />
-                        </motion.div>
-                        
-                        {/* Thumbnail Gallery */}
+                    {/* Left: Image Gallery - 60% width, compact height */}
+                    <div className="lg:col-span-7 relative">
+                        {/* Main Image */}
+                        <div className="relative aspect-[4/3] lg:aspect-[4/3] bg-[#F5F3EF] overflow-hidden group">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={selectedImageIndex}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="absolute inset-0"
+                                >
+                                    <Image
+                                        src={currentImage}
+                                        alt={product.name}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                        priority
+                                        sizes="(max-width: 1024px) 100vw, 60vw"
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
+
+                            {/* Discount Badge */}
+                            {hasDiscount && (
+                                <div className="absolute top-4 left-4 bg-black text-white px-3 py-1.5 text-[10px] tracking-widest font-medium">
+                                    SAVE {discountPercent}%
+                                </div>
+                            )}
+
+                            {/* Navigation Arrows */}
+                            {images.length > 1 && (
+                                <>
+                                    <button 
+                                        onClick={() => setSelectedImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur flex items-center justify-center hover:bg-white transition-colors"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button 
+                                        onClick={() => setSelectedImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur flex items-center justify-center hover:bg-white transition-colors"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Thumbnail Row */}
                         {images.length > 1 && (
-                            <div className="grid grid-cols-4 gap-2">
+                            <div className="flex gap-2 mt-2">
                                 {images.map((img, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setSelectedImageIndex(i)}
-                                        className={`relative aspect-square bg-neutral-50 overflow-hidden transition-all duration-300 ${
-                                            selectedImageIndex === i 
-                                                ? "ring-2 ring-primary ring-offset-2" 
-                                                : "opacity-60 hover:opacity-100"
+                                        className={`relative w-16 h-16 lg:w-20 lg:h-20 overflow-hidden transition-all ${
+                                            i === selectedImageIndex 
+                                                ? 'ring-2 ring-black ring-offset-1' 
+                                                : 'opacity-50 hover:opacity-100'
                                         }`}
                                     >
-                                        <Image
-                                            src={img}
-                                            alt={`${product.name} ${i + 1}`}
-                                            fill
-                                            className="object-cover"
-                                            sizes="150px"
-                                        />
+                                        <Image src={img} alt="" fill className="object-cover" sizes="80px" />
                                     </button>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Product Details - Right Side (Sticky) */}
-                    <div className="lg:col-span-5">
-                        <div className="lg:sticky lg:top-32 space-y-8">
-                            {/* Category */}
-                            <motion.p 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="font-utility text-[10px] text-neutral-500 uppercase tracking-[0.2em]"
-                            >
-                                {product.category?.name || "Collection"}
-                            </motion.p>
-                            
-                            {/* Title */}
-                            <motion.h1 
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.15 }}
-                                className="font-display text-4xl md:text-5xl lg:text-6xl leading-[0.95]"
-                            >
-                                {product.name}
-                            </motion.h1>
-                            
-                            {/* Price */}
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="flex items-baseline gap-4"
-                            >
-                                <span className="font-utility text-2xl tracking-wide">
-                                    ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {/* Right: Product Details - 40% width, compact */}
+                    <div className="lg:col-span-5 flex flex-col">
+                        {/* Category */}
+                        <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-2">
+                            {product.category?.name || "Collection"}
+                        </span>
+
+                        {/* Product Name */}
+                        <h1 className="font-display text-2xl lg:text-3xl xl:text-4xl leading-tight mb-3">
+                            {product.name}
+                        </h1>
+
+                        {/* Price */}
+                        <div className="flex items-baseline gap-3 mb-4">
+                            <span className="font-display text-xl lg:text-2xl italic">
+                                ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </span>
+                            {hasDiscount && (
+                                <span className="text-sm text-neutral-400 line-through">
+                                    ${product.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                 </span>
-                                {hasDiscount && (
-                                    <span className="font-utility text-sm text-neutral-400 line-through">
-                                        ${product.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                    </span>
-                                )}
-                            </motion.div>
+                            )}
+                        </div>
 
-                            {/* Description */}
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.25 }}
-                                className="font-utility text-sm leading-[1.8] text-neutral-600 max-w-lg"
-                            >
-                                {product.description}
-                            </motion.div>
+                        {/* Description - Compact */}
+                        <p className="text-[13px] leading-relaxed text-neutral-600 mb-5 line-clamp-3 lg:line-clamp-none">
+                            {product.description}
+                        </p>
 
-                            {/* Divider */}
-                            <div className="border-t border-neutral-200" />
+                        {/* Add to Cart */}
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isAdded}
+                            className={`w-full py-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-400 ${
+                                isAdded 
+                                    ? "bg-emerald-600 text-white" 
+                                    : "bg-black text-white hover:bg-neutral-800"
+                            }`}
+                        >
+                            {isAdded ? "✓ Added to Bag" : "Add to Bag"}
+                        </button>
 
-                            {/* Add to Cart Button */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                            >
-                                <button
-                                    onClick={handleAddToCart}
-                                    disabled={isAdded}
-                                    className={`w-full py-5 font-utility text-xs uppercase tracking-[0.2em] transition-all duration-500 ${
-                                        isAdded 
-                                            ? "bg-green-600 text-white" 
-                                            : "bg-primary text-white hover:bg-neutral-800"
-                                    }`}
-                                >
-                                    {isAdded ? "✓ Added to Bag" : "Add to Bag"}
-                                </button>
-                                
-                                <p className="font-utility text-[10px] text-neutral-400 uppercase tracking-widest text-center mt-4">
-                                    Complimentary shipping & returns
-                                </p>
-                            </motion.div>
+                        {/* Quick Info */}
+                        <div className="flex items-center justify-center gap-4 py-3 text-[9px] tracking-wider uppercase text-neutral-400">
+                            <span>Free Shipping</span>
+                            <span>•</span>
+                            <span>Easy Returns</span>
+                        </div>
 
-                            {/* Product Details Accordion */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.35 }}
-                                className="space-y-4 pt-4"
-                            >
-                                {/* Specifications */}
-                                {product.specifications && Object.keys(product.specifications).length > 0 && (
-                                    <details className="group border-t border-neutral-200 pt-4">
-                                        <summary className="flex justify-between items-center cursor-pointer list-none font-utility text-xs uppercase tracking-widest">
-                                            <span>Specifications</span>
-                                            <span className="transition-transform group-open:rotate-45">+</span>
-                                        </summary>
-                                        <div className="mt-4 grid grid-cols-2 gap-4">
-                                            {Object.entries(product.specifications).map(([key, val]) => (
-                                                <div key={key}>
-                                                    <span className="block font-utility text-[10px] text-neutral-500 uppercase">{key}</span>
-                                                    <span className="block font-utility text-xs mt-1 capitalize">{String(val)}</span>
+                        {/* Compact Accordions */}
+                        <div className="border-t border-neutral-200 mt-2">
+                            {/* Specifications */}
+                            {product.specifications && Object.keys(product.specifications).length > 0 && (
+                                <div className="border-b border-neutral-200">
+                                    <button 
+                                        onClick={() => toggleAccordion('specs')}
+                                        className="w-full flex justify-between items-center py-3 text-left"
+                                    >
+                                        <span className="text-[11px] tracking-[0.15em] uppercase font-medium">Specifications</span>
+                                        <svg className={`w-4 h-4 transition-transform ${activeAccordion === 'specs' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <AnimatePresence>
+                                        {activeAccordion === 'specs' && (
+                                            <motion.div 
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="pb-4 grid grid-cols-2 gap-3">
+                                                    {Object.entries(product.specifications).map(([key, val]) => (
+                                                        <div key={key}>
+                                                            <span className="block text-[9px] text-neutral-400 uppercase tracking-wider">{key}</span>
+                                                            <span className="block text-xs text-neutral-700 capitalize">{String(val)}</span>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </details>
-                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )}
 
-                                {/* Care */}
-                                <details className="group border-t border-neutral-200 pt-4">
-                                    <summary className="flex justify-between items-center cursor-pointer list-none font-utility text-xs uppercase tracking-widest">
-                                        <span>Care Instructions</span>
-                                        <span className="transition-transform group-open:rotate-45">+</span>
-                                    </summary>
-                                    <div className="mt-4 font-utility text-xs text-neutral-600 leading-relaxed">
-                                        Dry clean only. Store in a cool, dry place away from direct sunlight. 
-                                        Use padded hangers to maintain shape.
-                                    </div>
-                                </details>
+                            {/* Care */}
+                            <div className="border-b border-neutral-200">
+                                <button 
+                                    onClick={() => toggleAccordion('care')}
+                                    className="w-full flex justify-between items-center py-3 text-left"
+                                >
+                                    <span className="text-[11px] tracking-[0.15em] uppercase font-medium">Materials & Care</span>
+                                    <svg className={`w-4 h-4 transition-transform ${activeAccordion === 'care' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <AnimatePresence>
+                                    {activeAccordion === 'care' && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="pb-4 text-xs text-neutral-600 space-y-1.5">
+                                                <p>• Premium Italian leather</p>
+                                                <p>• Store in dust bag</p>
+                                                <p>• Avoid moisture</p>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
 
-                                {/* Shipping */}
-                                <details className="group border-t border-neutral-200 pt-4">
-                                    <summary className="flex justify-between items-center cursor-pointer list-none font-utility text-xs uppercase tracking-widest">
-                                        <span>Shipping & Returns</span>
-                                        <span className="transition-transform group-open:rotate-45">+</span>
-                                    </summary>
-                                    <div className="mt-4 font-utility text-xs text-neutral-600 leading-relaxed space-y-2">
-                                        <p>• Free standard shipping on all orders</p>
-                                        <p>• Express delivery available (2-3 business days)</p>
-                                        <p>• Free returns within 30 days of delivery</p>
-                                        <p>• Items must be unworn with original tags attached</p>
-                                    </div>
-                                </details>
-                            </motion.div>
+                            {/* Shipping */}
+                            <div>
+                                <button 
+                                    onClick={() => toggleAccordion('shipping')}
+                                    className="w-full flex justify-between items-center py-3 text-left"
+                                >
+                                    <span className="text-[11px] tracking-[0.15em] uppercase font-medium">Shipping & Returns</span>
+                                    <svg className={`w-4 h-4 transition-transform ${activeAccordion === 'shipping' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <AnimatePresence>
+                                    {activeAccordion === 'shipping' && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="pb-4 text-xs text-neutral-600 space-y-1.5">
+                                                <p>• Free express shipping worldwide</p>
+                                                <p>• 30-day returns</p>
+                                                <p>• Full refund on unworn items</p>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* Compact Trust Bar */}
+                        <div className="mt-4 pt-4 border-t border-neutral-200 flex justify-between text-center">
+                            {[
+                                { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Authentic" },
+                                { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Fast" },
+                                { icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", label: "Secure" },
+                                { icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9", label: "Global" }
+                            ].map((item, i) => (
+                                <div key={i} className="flex flex-col items-center gap-1">
+                                    <svg className="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                                    </svg>
+                                    <span className="text-[8px] tracking-wider uppercase text-neutral-400">{item.label}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
