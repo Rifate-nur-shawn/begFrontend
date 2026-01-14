@@ -43,7 +43,7 @@ export default function RootLayout({
                 <MenuOverlay />
                 <CartDrawer />
                 <SearchOverlay />
-                <main className="pt-24 min-h-screen">
+                <main className="pt-16 min-h-screen">
                     {children}
                 </main>
                 <Footer />

@@ -80,8 +80,8 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen bg-[#FAFAF8]">
-            {/* Compact Breadcrumb - Part of Header */}
-            <div className="pt-24 px-4 lg:px-8 py-3 bg-[#FAFAF8]">
+            {/* Compact Breadcrumb */}
+            <div className="px-4 lg:px-8 py-2 bg-[#FAFAF8]">
                 <nav className="text-[10px] tracking-[0.12em] uppercase text-neutral-400 flex items-center gap-1.5 max-w-[1800px] mx-auto">
                     <Link href="/" className="hover:text-black transition-colors">Home</Link>
                     <span>/</span>
