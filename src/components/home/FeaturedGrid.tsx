@@ -103,8 +103,8 @@ export default function FeaturedGrid() {
                 className="text-center mt-16"
             >
                 <Link 
-                    href="/collections/sarees" 
-                    className="inline-block font-utility text-xs tracking-widest uppercase border border-primary px-8 py-4 hover:bg-primary hover:text-white transition-colors"
+                    href="/collections/new-arrivals" 
+                    className="inline-flex items-center justify-center bg-black text-white font-utility text-[11px] font-bold tracking-[0.2em] uppercase px-14 py-4 hover:bg-neutral-800 transition-colors"
                 >
                     View All Products
                 </Link>

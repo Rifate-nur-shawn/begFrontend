@@ -57,7 +57,7 @@ export default function LoginPage() {
             </div>
 
             {/* Right: Login Form Section */}
-            <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 md:p-24 bg-canvas text-primary">
+            <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 md:p-24 bg-[#F5F3EF] text-primary">
                 <div className="w-full max-w-md text-center">
                     <h1 className="font-display text-4xl mb-4">Welcome Back</h1>
                     <p className="font-utility text-xs tracking-widest text-neutral-500 mb-12 uppercase">

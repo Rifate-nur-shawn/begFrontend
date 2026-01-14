@@ -19,9 +19,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white text-black font-medium border-t border-neutral-200">
+    <footer className="bg-white text-black font-medium">
       {/* Main Footer Content */}
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-16 lg:py-20">
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-10 lg:py-12">
         
         {/* Logo */}
         <div className="mb-12 lg:mb-16">
