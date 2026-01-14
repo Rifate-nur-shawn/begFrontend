@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import Link from "next/link";
 import { useUIStore } from "@/store/ui-store";
 import { MENU_DATA } from "@/lib/api/menu";
@@ -11,13 +11,13 @@ export default function MenuOverlay() {
   const { isMenuOpen, closeMenu } = useUIStore();
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
 
-  const menuVariants = {
+  const menuVariants: Variants = {
     closed: {
       opacity: 0,
       y: "-100%",
       transition: {
         duration: 0.8,
-        ease: [0.76, 0, 0.24, 1], 
+        ease: [0.76, 0, 0.24, 1],
       },
     },
     open: {

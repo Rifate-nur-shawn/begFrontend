@@ -55,7 +55,7 @@ export default function ProductPage() {
     const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
     const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
     const hasDiscount = product.salePrice && product.salePrice < product.basePrice;
-    const discountPercent = hasDiscount ? Math.round((1 - product.salePrice / product.basePrice) * 100) : 0;
+    const discountPercent = hasDiscount ? Math.round((1 - (product.salePrice || 0) / product.basePrice) * 100) : 0;
 
     const handleAddToCart = () => {
         addItem({
@@ -79,9 +79,9 @@ export default function ProductPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAF8]">
+        <div className="min-h-screen bg-white">
             {/* Compact Breadcrumb */}
-            <div className="px-4 lg:px-8 py-2 bg-[#FAFAF8]">
+            <div className="px-4 lg:px-8 py-2 bg-white">
                 <nav className="text-[10px] tracking-[0.12em] uppercase text-neutral-400 flex items-center gap-1.5 max-w-[1800px] mx-auto">
                     <Link href="/" className="hover:text-black transition-colors">Home</Link>
                     <span>/</span>

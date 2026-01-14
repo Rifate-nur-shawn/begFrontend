@@ -19,7 +19,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#FAFAF8] text-black font-medium border-t border-neutral-200">
+    <footer className="bg-white text-black font-medium border-t border-neutral-200">
       {/* Main Footer Content */}
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-16 lg:py-20">
         
