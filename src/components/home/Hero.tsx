@@ -5,6 +5,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useFeaturedProducts } from "@/lib/api/products-hooks";
+import { UI_CONSTANTS, ROUTES } from "@/lib/constants";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,7 @@ export default function Hero() {
   const { products, isLoading } = useFeaturedProducts(1);
   const featuredProduct = products[0];
   
-  const heroImage = featuredProduct?.media?.images?.[0] || "/products/product_saree_red_1768316591404.png";
+  const heroImage = featuredProduct?.media?.images?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
 
   // Smooth spring physics for buttery scroll animations
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
@@ -73,7 +74,7 @@ export default function Hero() {
               textShadow: "0 4px 30px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3)"
             }}
           >
-            The New Era
+            {UI_CONSTANTS.HERO_TITLE}
           </motion.h1>
         </div>
         
@@ -87,7 +88,7 @@ export default function Hero() {
               textShadow: "0 2px 20px rgba(0,0,0,0.5)"
             }}
           >
-            Redefining modern luxury through craftsmanship
+            {UI_CONSTANTS.HERO_SUBTITLE}
           </motion.p>
         </div>
 
@@ -97,10 +98,10 @@ export default function Hero() {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.9 }}
         >
           <Link 
-            href="/collections/sarees"
+            href={ROUTES.COLLECTIONS}
             className="group relative inline-flex items-center gap-3 px-10 py-5 bg-white/95 backdrop-blur-sm text-black font-utility text-xs tracking-[0.15em] uppercase overflow-hidden transition-all duration-500 hover:bg-white hover:scale-[1.02] hover:shadow-2xl"
           >
-            <span className="relative z-10 font-medium">Explore Collection</span>
+            <span className="relative z-10 font-medium">{UI_CONSTANTS.HERO_BUTTON_TEXT}</span>
             <svg 
               className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-2" 
               fill="none" 

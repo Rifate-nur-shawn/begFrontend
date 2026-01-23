@@ -15,6 +15,7 @@ export default function ProductInfo({ product }: { product: Product }) {
     
     addToStore({
         id: product.id,
+        productId: product.id,
         name: product.name,
         price: product.price,
         size: selectedSize,

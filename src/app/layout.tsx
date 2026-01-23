@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import Providers from "@/components/providers/Providers";
 import LoginModal from "@/components/auth/LoginModal";
 import "./globals.css";
+import { APP_CONFIG } from "@/lib/constants";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -23,8 +24,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Velancis",
-  description: "Modern Luxury Bag E-commerce",
+  title: APP_CONFIG.BRAND_NAME,
+  description: APP_CONFIG.DESCRIPTION,
 };
 
 export default function RootLayout({
