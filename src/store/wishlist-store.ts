@@ -34,13 +34,13 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
       // Map backend response to WishlistItem if necessary.
       // Assuming backend returns list of products or similar structure
       // Adjust mapping based on actual API response, inferred for now as standard
-      const mappedItems = data.map((item: any) => ({
+      const mappedItems = (data.items || []).map((item: any) => ({
           id: item.id || item.productId,
-          productId: item.id || item.productId, // Handle both cases if backend varies
-          name: item.name || item.product?.name,
-          price: item.salePrice || item.basePrice || item.product?.salePrice || item.product?.basePrice,
-          image: item.media?.images?.[0] || item.product?.media?.images?.[0] || "",
-          addedAt: new Date().toISOString() // Backend might not send this, fallback
+          productId: item.productId,
+          name: item.product?.name,
+          price: item.product?.salePrice || item.product?.basePrice,
+          image: item.product?.media?.[0] || item.product?.images?.[0] || "",
+          addedAt: item.addedAt
       }));
       set({ items: mappedItems });
     } catch (error) {
