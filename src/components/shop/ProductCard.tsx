@@ -6,24 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { UI_CONSTANTS } from "@/lib/constants";
-
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    basePrice: number;
-    salePrice?: number | null;
-    isNew?: boolean;
-    media?: {
-        images?: string[];
-    };
-    category?: {
-        name: string;
-    };
-    // Mock data for colors and sizes until backend supports them
-    colors?: { name: string; hex: string }[];
-    sizes?: string[];
-}
+import { Product } from "@/lib/api/products-hooks";
 
 // Default mock data for demo purposes
 const DEFAULT_COLORS = [
@@ -45,9 +28,11 @@ export default function ProductCard({ product }: { product: Product }) {
     const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
     const hasDiscount = product.salePrice && product.salePrice < product.basePrice;
     
-    const image = (product.media?.images?.length) 
-        ? product.media.images[0] 
-        : UI_CONSTANTS.HERO_FALLBACK_IMAGE;
+    const image = (product.images?.length) 
+        ? product.images[0] 
+        : (product.media?.length)
+            ? product.media[0]
+            : UI_CONSTANTS.HERO_FALLBACK_IMAGE;
 
     const colors = product.colors || DEFAULT_COLORS;
     const sizes = product.sizes || DEFAULT_SIZES;
@@ -127,7 +112,7 @@ export default function ProductCard({ product }: { product: Product }) {
                                 {colors.map((color) => (
                                     <button
                                         key={color.name}
-                                        onClick={(e) => {
+                                        onClick={(e: React.MouseEvent) => {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             setSelectedColor(color.name);
@@ -153,7 +138,7 @@ export default function ProductCard({ product }: { product: Product }) {
                                 {sizes.map((size) => (
                                     <button
                                         key={size}
-                                        onClick={(e) => {
+                                        onClick={(e: React.MouseEvent) => {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             setSelectedSize(size);

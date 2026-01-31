@@ -55,7 +55,7 @@ export default function FeaturedGrid() {
             <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                 {products.slice(0, 4).map((product, i) => {
                     const layout = layouts[i] || layouts[0];
-                    const image = product.media?.images?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
+                    const image = product.images?.[0] || product.media?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
                     const price = product.salePrice && product.salePrice < product.basePrice 
                         ? product.salePrice 
                         : product.basePrice;

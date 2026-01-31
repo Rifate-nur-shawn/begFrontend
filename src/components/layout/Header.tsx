@@ -88,10 +88,22 @@ export default function Header() {
           {isAuthenticated ? (
             <Link
               href="/account"
-              className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60"
+              className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60 flex items-center justify-center"
               title={user?.email}
             >
-              Account
+              {user?.avatar ? (
+                // Avatar Image
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-neutral-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                        src={user.avatar} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+              ) : (
+                "Account"
+              )}
             </Link>
           ) : (
             <Link 

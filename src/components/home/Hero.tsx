@@ -18,7 +18,7 @@ export default function Hero() {
   const { products, isLoading } = useFeaturedProducts(1);
   const featuredProduct = products[0];
   
-  const heroImage = featuredProduct?.media?.images?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
+  const heroImage = featuredProduct?.images?.[0] || featuredProduct?.media?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
 
   // Smooth spring physics for buttery scroll animations
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };

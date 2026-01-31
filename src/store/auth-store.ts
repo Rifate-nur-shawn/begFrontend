@@ -7,6 +7,9 @@ interface User {
   id: string;
   email: string;
   role: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
   preferences?: Record<string, unknown>;
 }
 
@@ -33,10 +36,10 @@ export const useAuthStore = create<AuthState>()(
 
       setAccessToken: (token) => set({ accessToken: token }),
 
-      loginGoogle: async (idToken) => {
+      loginGoogle: async (code) => {
         set({ isLoading: true });
         try {
-          const { data } = await api.post('/auth/google', { idToken });
+          const { data } = await api.post('/auth/google', { code });
           set({ 
             user: data.user, 
             accessToken: data.accessToken, 
