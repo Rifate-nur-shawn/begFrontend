@@ -79,11 +79,19 @@ export default function Header() {
             Search
           </button>
           <button 
-            onClick={openCart}
             className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60"
           >
             Bag ({items.length})
           </button>
+
+          {user?.role === 'admin' && (
+             <Link
+               href="/admin"
+               className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60 text-red-500"
+             >
+               Admin
+             </Link>
+          )}
           
           {isAuthenticated ? (
             <Link
