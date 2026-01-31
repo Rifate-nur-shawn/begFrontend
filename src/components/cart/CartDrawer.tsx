@@ -72,7 +72,7 @@ export default function CartDrawer() {
                 <div className="p-6 border-t border-neutral-100 bg-neutral-50">
                     <div className="flex justify-between mb-4 font-utility text-sm uppercase tracking-widest">
                         <span>Total</span>
-                        <span>${total.toLocaleString()}</span>
+                        <span>Tk {total.toLocaleString()}</span>
                     </div>
                     <Link 
                         href="/checkout" 

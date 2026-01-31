@@ -29,7 +29,7 @@ export default function ProductInfo({ product }: { product: Product }) {
     <div className="sticky top-24 px-4 md:px-12 py-8 h-fit">
       <div className="mb-8">
         <h1 className="font-display text-4xl md:text-5xl mb-2">{product.name}</h1>
-        <p className="font-utility text-lg">${product.price.toLocaleString()}</p>
+        <p className="font-utility text-lg">Tk {product.price.toLocaleString()}</p>
       </div>
 
       <div className="mb-8">

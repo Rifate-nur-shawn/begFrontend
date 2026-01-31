@@ -7,7 +7,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProduct } from "@/lib/api/products-hooks";
 import { useCartStore } from "@/store/cart-store";
+import { useWishlistStore } from "@/store/wishlist-store";
 import { useUIStore } from "@/store/ui-store";
+import { useAuthStore } from "@/store/auth-store";
+import ReviewSection from "@/components/product/ReviewSection";
 
 export default function ProductPage() {
     const params = useParams();
@@ -19,7 +22,11 @@ export default function ProductPage() {
     const [isAdded, setIsAdded] = useState(false);
     const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
     const { addItem } = useCartStore();
-    const { openCart } = useUIStore();
+    const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlistStore();
+    const { openCart, openLogin } = useUIStore();
+    const { isAuthenticated } = useAuthStore();
+
+    const isWishlisted = product ? isInWishlist(product.id) : false;
 
     useEffect(() => {
         setSelectedImageIndex(0);
@@ -72,6 +79,14 @@ export default function ProductPage() {
             openCart();
             setIsAdded(false);
         }, 600);
+    };
+
+    const handleWishlist = () => {
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist(product);
+        }
     };
 
     const toggleAccordion = (id: string) => {
@@ -200,21 +215,36 @@ export default function ProductPage() {
                             {product.description}
                         </p>
 
-                        {/* Add to Cart */}
-                        <button
-                            onClick={handleAddToCart}
-                            disabled={isAdded}
-                            className={`w-full py-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-400 ${
-                                isAdded 
-                                    ? "bg-emerald-600 text-white" 
-                                    : "bg-black text-white hover:bg-neutral-800"
-                            }`}
-                        >
-                            {isAdded ? "✓ Added to Bag" : "Add to Bag"}
-                        </button>
+                        {/* Actions */}
+                        <div className="flex gap-4 mb-2">
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAdded}
+                                className={`flex-1 py-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-400 ${
+                                    isAdded 
+                                        ? "bg-emerald-600 text-white" 
+                                        : "bg-black text-white hover:bg-neutral-800"
+                                }`}
+                            >
+                                {isAdded ? "✓ Added to Bag" : "Add to Bag"}
+                            </button>
+                            <button
+                                onClick={handleWishlist}
+                                className={`w-14 flex items-center justify-center border transition-colors ${
+                                    isWishlisted 
+                                        ? "bg-red-50 border-red-200 text-red-500" 
+                                        : "border-neutral-200 text-neutral-400 hover:border-black hover:text-black"
+                                }`}
+                                title="Add to Wishlist"
+                            >
+                                <svg className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </button>
+                        </div>
 
                         {/* Quick Info */}
-                        <div className="flex items-center justify-center gap-4 py-3 text-[9px] tracking-wider uppercase text-neutral-400">
+                        <div className="flex items-center justify-center gap-4 py-3 text-[9px] tracking-wider uppercase text-neutral-400 mb-4">
                             <span>Free Shipping</span>
                             <span>•</span>
                             <span>Easy Returns</span>
@@ -336,6 +366,9 @@ export default function ProductPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Review Section - Added below main content */}
+                <ReviewSection productId={product.id} />
             </div>
         </div>
     );

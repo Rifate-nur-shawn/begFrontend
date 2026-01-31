@@ -1,18 +1,54 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useProduct } from "@/lib/api/products-hooks";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFeaturedProducts } from "@/lib/api/products-hooks";
+import api from "@/lib/api/axios";
+
+// Using 'any' for product type here to match quick integration needs, 
+// ideally should share the Product interface from types/defaults.ts or similar
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface SearchResult {
+    id: string;
+    name: string;
+    slug: string;
+    basePrice: number;
+    salePrice?: number;
+    description: string;
+    category?: { name: string };
+    media?: { images: string[] };
+}
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const query = searchParams.get("q") || "";
     
-    // For now, we'll use the featured products hook as a mock search
-    // In a real app, you'd pass the query to a dedicated search hook
-    const { products, isLoading } = useFeaturedProducts(12);
+    const [products, setProducts] = useState<SearchResult[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchResults = async () => {
+            setIsLoading(true);
+            try {
+                // Backend expects /search?q=...
+                const { data } = await api.get(`/search?q=${encodeURIComponent(query)}`);
+                setProducts(data || []);
+            } catch (error) {
+                console.error("Search failed", error);
+                setProducts([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (query) {
+            fetchResults();
+        } else {
+            setProducts([]);
+            setIsLoading(false);
+        }
+    }, [query]);
 
     return (
         <div className="min-h-screen bg-white pt-32 pb-20">
@@ -45,7 +81,6 @@ export default function SearchPage() {
                                         fill
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
-                                    {/* Quick action overlay could go here */}
                                 </div>
                                 <div className="text-center md:text-left">
                                     <p className="font-utility text-[10px] uppercase tracking-[0.1em] text-neutral-500 mb-2">

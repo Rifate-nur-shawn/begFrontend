@@ -108,7 +108,7 @@ export default function ProductCard({ product }: { product: Product }) {
                             {product.name}
                         </h3>
                         <p className="font-utility text-xs text-amber-400 mt-1">
-                            {price.toLocaleString('en-US', { minimumFractionDigits: 2 })} EUR
+                            Tk {price.toLocaleString('en-US', { minimumFractionDigits: 0 })}
                         </p>
                     </div>
 

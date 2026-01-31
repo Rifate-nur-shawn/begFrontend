@@ -32,7 +32,7 @@ export default function CartItem({ item }: { item: CartItemType }) {
         </div>
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-1">
-             <p className="font-utility text-xs text-primary">${item.price.toLocaleString()}</p>
+             <p className="font-utility text-xs text-primary">Tk {item.price.toLocaleString()}</p>
              
              {/* Quantity Controls */}
              <div className="flex items-center gap-3 mt-1">

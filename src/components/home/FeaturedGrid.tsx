@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useFeaturedProducts } from "@/lib/api/products-hooks";
+import { UI_CONSTANTS } from "@/lib/constants";
 
 export default function FeaturedGrid() {
     // Use SWR for cached data
@@ -54,7 +55,7 @@ export default function FeaturedGrid() {
             <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                 {products.slice(0, 4).map((product, i) => {
                     const layout = layouts[i] || layouts[0];
-                    const image = product.media?.images?.[0] || "/products/product_saree_red_1768316591404.png";
+                    const image = product.media?.images?.[0] || UI_CONSTANTS.HERO_FALLBACK_IMAGE;
                     const price = product.salePrice && product.salePrice < product.basePrice 
                         ? product.salePrice 
                         : product.basePrice;
@@ -86,7 +87,7 @@ export default function FeaturedGrid() {
                                         {product.name}
                                     </h3>
                                     <p className="font-utility text-xs tracking-widest text-white uppercase translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                                        ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                        Tk {price.toLocaleString('en-US', { minimumFractionDigits: 0 })}
                                     </p>
                                 </div>
                             </Link>

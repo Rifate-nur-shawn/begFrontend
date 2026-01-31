@@ -125,7 +125,7 @@ export default function CheckoutPage() {
                                 <div>
                                     <p className="font-display text-sm">{item.name}</p>
                                     <p className="font-utility text-xs text-neutral-500">{item.size} | x{item.quantity}</p>
-                                    <p className="font-utility text-xs mt-1">${item.price}</p>
+                                    <p className="font-utility text-xs mt-1">Tk {item.price}</p>
                                 </div>
                             </div>
                         ))}
@@ -135,7 +135,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-neutral-100 pt-6 space-y-2 mb-8">
                      <div className="flex justify-between font-utility text-sm">
                         <span className="text-neutral-500">Subtotal</span>
-                        <span>${total.toLocaleString()}</span>
+                        <span>Tk {total.toLocaleString()}</span>
                      </div>
                      <div className="flex justify-between font-utility text-sm">
                         <span className="text-neutral-500">Shipping</span>
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
                      </div>
                      <div className="flex justify-between font-utility text-sm pt-4 border-t border-dashed border-neutral-200">
                         <span>Total</span>
-                        <span className="font-bold">${total.toLocaleString()}</span>
+                        <span className="font-bold">Tk {total.toLocaleString()}</span>
                      </div>
                 </div>
 

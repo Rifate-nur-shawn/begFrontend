@@ -20,11 +20,11 @@ export const UI_CONSTANTS = {
   HERO_TITLE: "The New Era",
   HERO_SUBTITLE: "Redefining modern luxury through craftsmanship",
   HERO_BUTTON_TEXT: "Explore Collection",
-  HERO_FALLBACK_IMAGE: "/products/product_saree_red_1768316591404.png", // Verify if we have a bag image fallback
+  // Updated to a bag image from Unsplash (matches "Arcadie Leather Tote" style)
+  HERO_FALLBACK_IMAGE: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop",
   TOPBAR_TEXT: "COMPLIMENTARY SHIPPING & RETURNS ON ALL ORDERS",
 };
 
-// Add fallback image for bags if available, otherwise keep the placeholder
 export const ASSETS = {
-  FALLBACK_PRODUCT_IMAGE: "/placeholder-bag.png", // We might need to generate this or use an existing one
+  FALLBACK_PRODUCT_IMAGE: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1957&auto=format&fit=crop",
 };
