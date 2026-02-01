@@ -44,7 +44,7 @@ export default function CartDrawer() {
           >
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-neutral-100">
-              <h2 className="font-display text-xl">Shopping Bag ({items.length})</h2>
+              <h2 className="font-display text-xl">Shopping Cart ({items.length})</h2>
               <button
                 onClick={closeCart}
                 className="font-utility text-xs uppercase tracking-widest text-primary hover:text-neutral-500"
@@ -57,7 +57,7 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-neutral-500">
-                  <p className="font-utility text-sm uppercase tracking-widest">Your bag is empty</p>
+                  <p className="font-utility text-sm uppercase tracking-widest">Your cart is empty</p>
                 </div>
               ) : (
                 items.map((item, i) => (

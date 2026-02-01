@@ -13,15 +13,8 @@ export default function WishlistTab() {
     }, []);
 
     const handleAddToCart = (item: any) => {
-        addItem({
-            id: item.productId,
-            productId: item.productId,
-            name: item.name,
-            price: item.price,
-            image: item.image,
-            size: "One Size",
-            color: "Default"
-        });
+        // Use simpler addItem signature matching the new store
+        addItem(item.productId, 1);
     };
 
     if (isLoading && items.length === 0) {
@@ -71,7 +64,7 @@ export default function WishlistTab() {
                             onClick={() => handleAddToCart(item)}
                             className="text-[10px] uppercase tracking-widest border-b border-black pb-0.5 hover:text-neutral-600 hover:border-neutral-600 transition-colors"
                         >
-                            Add to Bag
+                            Add to Cart
                         </button>
                     </div>
                 </div>

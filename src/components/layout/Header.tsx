@@ -9,6 +9,8 @@ import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
 import clsx from "clsx";
 
+import { APP_CONFIG } from "@/lib/constants";
+
 export default function Header() {
   const pathname = usePathname();
   const { toggleMenu, isMenuOpen, openCart, openSearch, isSearchOpen, isCartOpen } = useUIStore();
@@ -66,7 +68,7 @@ export default function Header() {
         {/* Center: Logo */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2">
           <h1 className="font-display text-xl md:text-2xl tracking-tight font-medium">
-            Velancis
+            {APP_CONFIG.BRAND_NAME}
           </h1>
         </Link>
 
@@ -80,8 +82,9 @@ export default function Header() {
           </button>
           <button 
             className="font-utility text-[11px] font-medium tracking-widest uppercase transition-opacity hover:opacity-60"
+            onClick={openCart}
           >
-            Bag ({items.length})
+            Cart ({items.length})
           </button>
 
           {user?.role === 'admin' && (

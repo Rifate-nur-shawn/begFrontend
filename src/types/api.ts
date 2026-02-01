@@ -64,6 +64,7 @@ export interface Product {
   // Helper fields for frontend (backend might not send these directly, but useful for UI fallback)
   colors?: { name: string; hex: string }[];
   sizes?: string[];
+  categories?: Category[];
   isNew?: boolean;
   createdAt: string;
   updatedAt: string;

@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   BRAND_NAME: "BEG",
-  DESCRIPTION: "Modern Luxury Bag E-commerce",
+  DESCRIPTION: "Women's Beg Online Shop",
   API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1",
   CONTACT_EMAIL: "concierge@beg.com",
 };
@@ -17,9 +17,9 @@ export const ROUTES = {
 };
 
 export const UI_CONSTANTS = {
-  HERO_TITLE: "The New Era",
-  HERO_SUBTITLE: "Redefining modern luxury through craftsmanship",
-  HERO_BUTTON_TEXT: "Explore Collection",
+  HERO_TITLE: "BEG",
+  HERO_SUBTITLE: "Women's Beg Online Shop",
+  HERO_BUTTON_TEXT: "Shop Now",
   // Updated to a bag image from Unsplash (matches "Arcadie Leather Tote" style)
   HERO_FALLBACK_IMAGE: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop",
   TOPBAR_TEXT: "COMPLIMENTARY SHIPPING & RETURNS ON ALL ORDERS",

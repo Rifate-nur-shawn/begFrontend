@@ -114,7 +114,7 @@ export default function CheckoutPage() {
                 <h2 className="font-display text-2xl mb-8">Order Summary</h2>
                 
                 {items.length === 0 ? (
-                    <p className="font-utility text-sm text-neutral-500 mb-6">Your bag is empty.</p>
+                    <p className="font-utility text-sm text-neutral-500 mb-6">Your cart is empty.</p>
                 ) : (
                     <div className="space-y-6 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                         {items.map((item) => {

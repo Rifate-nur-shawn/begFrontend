@@ -80,7 +80,7 @@ export default function CollectionsPage() {
                                         <h2 className="font-display text-3xl md:text-4xl tracking-wide">{category.name}</h2>
                                         <div className="h-px w-12 bg-white mt-4 transition-all duration-300 group-hover:w-24" />
                                         <span className="font-utility text-[10px] uppercase tracking-widest mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-                                            View Collection
+                                            Shop {category.name}
                                         </span>
                                     </div>
                                 </motion.div>

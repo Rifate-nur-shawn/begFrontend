@@ -58,22 +58,23 @@ export default function ProductPage() {
         );
     }
 
-    const images = product.media?.images || [];
+    const images = product.media && product.media.length > 0 
+        ? product.media 
+        : product.images && product.images.length > 0 
+            ? product.images 
+            : [];
+            
     const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
     const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
     const hasDiscount = product.salePrice && product.salePrice < product.basePrice;
     const discountPercent = hasDiscount ? Math.round((1 - (product.salePrice || 0) / product.basePrice) * 100) : 0;
+    
+    // Fallback category logic
+    const categoryName = product.categories?.[0]?.name || "Collection";
+    const categorySlug = product.categories?.[0]?.slug || "new-arrivals";
 
     const handleAddToCart = () => {
-        addItem({
-            id: product.id,
-            productId: product.id,
-            name: product.name,
-            price: price,
-            image: currentImage,
-            size: "One Size",
-            color: "Default"
-        });
+        addItem(product.id, 1);
         setIsAdded(true);
         setTimeout(() => {
             openCart();
@@ -100,8 +101,8 @@ export default function ProductPage() {
                 <nav className="text-[10px] tracking-[0.12em] uppercase text-neutral-400 flex items-center gap-1.5 max-w-[1800px] mx-auto">
                     <Link href="/" className="hover:text-black transition-colors">Home</Link>
                     <span>/</span>
-                    <Link href={`/collections/${product.category?.slug || 'new-arrivals'}`} className="hover:text-black transition-colors">
-                        {product.category?.name || "Collection"}
+                    <Link href={`/collections/${categorySlug}`} className="hover:text-black transition-colors">
+                        {categoryName}
                     </Link>
                     <span>/</span>
                     <span className="text-neutral-600 truncate max-w-[200px]">{product.name}</span>
@@ -190,7 +191,7 @@ export default function ProductPage() {
                     <div className="lg:col-span-5 flex flex-col">
                         {/* Category */}
                         <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-2">
-                            {product.category?.name || "Collection"}
+                            {categoryName}
                         </span>
 
                         {/* Product Name */}
@@ -226,7 +227,7 @@ export default function ProductPage() {
                                         : "bg-black text-white hover:bg-neutral-800"
                                 }`}
                             >
-                                {isAdded ? "✓ Added to Bag" : "Add to Bag"}
+                                {isAdded ? "✓ Added to Cart" : "Add to Cart"}
                             </button>
                             <button
                                 onClick={handleWishlist}
