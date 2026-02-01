@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,14 +23,160 @@ export default function ProductPage() {
     const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
     const { addItem } = useCartStore();
     const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlistStore();
-    const { openCart, openLogin } = useUIStore();
+    const { openCart } = useUIStore();
     const { isAuthenticated } = useAuthStore();
+
+    // Variant Logic Hooks - Hoisted to top level
+    // Ensure variants is an array and filter out invalid items
+    const variants = useMemo(() => {
+        if (!product?.variants || !Array.isArray(product.variants)) return [];
+        return product.variants.filter(v => v && typeof v === 'object');
+    }, [product]);
+
+    const hasVariants = variants.length > 0;
+
+    // Derived Options - Memoized
+    const { colors, sizes } = useMemo(() => {
+        if (!hasVariants) return { colors: [], sizes: [] };
+        
+        const c = Array.from(new Set(variants.map(v => {
+            const attr = (v as any).attributes || {};
+            return attr?.color;
+        }).filter(item => typeof item === 'string' && item.length > 0))) as string[];
+        
+        const s = Array.from(new Set(variants.map(v => {
+            const attr = (v as any).attributes || {};
+            return attr?.size;
+        }).filter(item => typeof item === 'string' && item.length > 0))) as string[];
+        
+        return { colors: c, sizes: s };
+    }, [variants, hasVariants]);
+
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
+    const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
     const isWishlisted = product ? isInWishlist(product.id) : false;
 
     useEffect(() => {
         setSelectedImageIndex(0);
     }, [product?.id]);
+
+    // Auto-select defaults
+    useEffect(() => {
+        if (!product) return;
+        
+        if (hasVariants && !selectedVariantId) {
+            // Only run if we haven't selected yet
+            if (variants.length === 1) {
+                setSelectedVariantId(variants[0].id);
+            } else {
+                 if (colors.length > 0 && !selectedColor) setSelectedColor(colors[0]);
+                 if (sizes.length > 0 && !selectedSize) setSelectedSize(sizes[0]);
+            }
+        }
+    }, [product?.id, hasVariants, colors, sizes, selectedVariantId, selectedColor, selectedSize, variants.length]);
+
+    // Resolve Variant from selections
+    useEffect(() => {
+        if (!product || !hasVariants) return;
+
+        // Find variant matching current selections
+        const match = variants.find(v => {
+            const attr = (v as any).attributes || {};
+            const colorMatch = !colors.length || (attr.color === selectedColor);
+            const sizeMatch = !sizes.length || (attr.size === selectedSize);
+            return colorMatch && sizeMatch;
+        });
+
+        if (match) {
+            setSelectedVariantId(match.id);
+        } else {
+             setSelectedVariantId(null);
+        }
+    }, [selectedColor, selectedSize, variants, hasVariants, colors.length, sizes.length, product?.id]);
+
+    const handleAddToCart = () => {
+        if (!product) return;
+        
+        if (hasVariants && !selectedVariantId) {
+             // In a real app, show a toast or error message
+             alert("Please select a valid option"); 
+             return;
+        }
+
+        addItem(product.id, 1, selectedVariantId || undefined);
+        setIsAdded(true);
+        setTimeout(() => {
+            openCart();
+            setIsAdded(false);
+        }, 600);
+    };
+
+    const handleWishlist = () => {
+        if (!product) return;
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist(product);
+        }
+    };
+
+    // Variant & Image Logic - HOISTED ABOVE EARLY RETURNS
+    const selectedVariant = useMemo(() => 
+        variants.find(v => v.id === selectedVariantId), 
+    [variants, selectedVariantId]);
+
+    const images = useMemo(() => {
+        if (selectedVariant?.images && Array.isArray(selectedVariant.images) && selectedVariant.images.length > 0) {
+            return selectedVariant.images;
+        }
+        
+        // Robust check for product media/images
+        const media = Array.isArray(product?.media) ? product.media : [];
+        const prodImages = Array.isArray(product?.images) ? product.images : [];
+        
+        return media.length > 0 
+            ? media 
+            : prodImages.length > 0 
+                ? prodImages 
+                : [];
+    }, [product, selectedVariant]);
+            
+    // Reset image index when images list changes (e.g. switching variants)
+    useEffect(() => {
+        setSelectedImageIndex(0);
+    }, [images]);
+
+    const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
+    
+    // Price Logic
+    const variantPrice = selectedVariant?.price || 0;
+    const variantSalePrice = selectedVariant?.salePrice;
+    
+    // Determine the price to display
+    const finalPrice = selectedVariant 
+        ? (variantSalePrice && variantSalePrice < variantPrice ? variantSalePrice : variantPrice)
+        : (product?.salePrice && product.salePrice < product.basePrice ? product.salePrice : product?.basePrice || 0);
+        
+    const originalPrice = selectedVariant
+        ? (variantSalePrice && variantSalePrice < variantPrice ? variantPrice : null)
+        : (product?.salePrice && product.salePrice < product.basePrice ? product.basePrice : null);
+
+    // Calculate discount only if we have a valid original price and final price is lower
+    const hasDiscount = !!originalPrice && (finalPrice < originalPrice);
+    const discountPercent = hasDiscount && originalPrice ? Math.round((1 - finalPrice / originalPrice) * 100) : 0;
+    
+    // Fallback category logic
+    const categoryName = Array.isArray(product?.categories) && product.categories[0]?.name ? product.categories[0].name : "Collection";
+    const categorySlug = Array.isArray(product?.categories) && product.categories[0]?.slug ? product.categories[0].slug : "new-arrivals";
+    const productName = product?.name || "";
+    const productDescription = product?.description || "";
+    const productSpecs = product?.specifications || {};
+
+    const toggleAccordion = (id: string) => {
+        setActiveAccordion(activeAccordion === id ? null : id);
+    };
 
     if (isLoading) {
         return (
@@ -57,42 +203,8 @@ export default function ProductPage() {
             </div>
         );
     }
-
-    const images = product.media && product.media.length > 0 
-        ? product.media 
-        : product.images && product.images.length > 0 
-            ? product.images 
-            : [];
             
-    const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
-    const price = product.salePrice && product.salePrice < product.basePrice ? product.salePrice : product.basePrice;
-    const hasDiscount = product.salePrice && product.salePrice < product.basePrice;
-    const discountPercent = hasDiscount ? Math.round((1 - (product.salePrice || 0) / product.basePrice) * 100) : 0;
-    
-    // Fallback category logic
-    const categoryName = product.categories?.[0]?.name || "Collection";
-    const categorySlug = product.categories?.[0]?.slug || "new-arrivals";
 
-    const handleAddToCart = () => {
-        addItem(product.id, 1);
-        setIsAdded(true);
-        setTimeout(() => {
-            openCart();
-            setIsAdded(false);
-        }, 600);
-    };
-
-    const handleWishlist = () => {
-        if (isWishlisted) {
-            removeFromWishlist(product.id);
-        } else {
-            addToWishlist(product);
-        }
-    };
-
-    const toggleAccordion = (id: string) => {
-        setActiveAccordion(activeAccordion === id ? null : id);
-    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -202,11 +314,11 @@ export default function ProductPage() {
                         {/* Price */}
                         <div className="flex items-baseline gap-3 mb-4">
                             <span className="font-display text-xl lg:text-2xl italic">
-                                ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                ${finalPrice?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </span>
-                            {hasDiscount && (
+                            {hasDiscount && originalPrice && (
                                 <span className="text-sm text-neutral-400 line-through">
-                                    ${product.basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                    ${originalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                 </span>
                             )}
                         </div>
@@ -216,18 +328,100 @@ export default function ProductPage() {
                             {product.description}
                         </p>
 
+                        {/* Variant Selectors */}
+                        {hasVariants && (
+                            <div className="mb-6 space-y-4">
+                                {colors.length > 0 && (
+                                    <div>
+                                        <span className="text-[10px] tracking-widest uppercase text-neutral-400 mb-2 block">Color: <span className="text-black">{selectedColor}</span></span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {colors.map((color) => {
+                                                // Check availability based on selected size (if any)
+                                                // Usually we drive Color -> Size, so Color is always available unless we want strict cross-checking
+                                                // But if Size is selected, we might want to gray out Colors that don't have that size? 
+                                                // Common UX: Color is primary. Size filters based on Color.
+                                                // Let's stick to: Color is always "enabled", Size depends on Color.
+                                                
+                                                return (
+                                                    <button
+                                                        key={color}
+                                                        onClick={() => {
+                                                            setSelectedColor(color);
+                                                            // If we switch color and the current selected size doesn't exist for this new color, reset size?
+                                                            // Or try to keep it if valid.
+                                                            const validVariantExists = variants.some(v => 
+                                                                (v.attributes as any)?.color === color && 
+                                                                (!selectedSize || (v.attributes as any)?.size === selectedSize)
+                                                            );
+                                                            
+                                                            if (selectedSize && !validVariantExists) {
+                                                                // Try to find a valid size for this new color
+                                                                const firstValidSize = sizes.find(s => 
+                                                                    variants.some(v => (v.attributes as any)?.color === color && (v.attributes as any)?.size === s)
+                                                                );
+                                                                setSelectedSize(firstValidSize || null);
+                                                            }
+                                                        }}
+                                                        className={`h-8 px-3 border text-[11px] uppercase tracking-widest transition-all ${
+                                                            selectedColor === color
+                                                                ? "border-black bg-black text-white"
+                                                                : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                                                        }`}
+                                                    >
+                                                        {color}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {sizes.length > 0 && (
+                                    <div>
+                                        <span className="text-[10px] tracking-widest uppercase text-neutral-400 mb-2 block">Size: <span className="text-black">{selectedSize}</span></span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {sizes.map((size) => {
+                                                // Check if this size exists for the CURRENT selected color
+                                                const isAvailable = !selectedColor || variants.some(v => 
+                                                    (v.attributes as any)?.color === selectedColor && 
+                                                    (v.attributes as any)?.size === size
+                                                );
+
+                                                return (
+                                                    <button
+                                                        key={size}
+                                                        onClick={() => setSelectedSize(size)}
+                                                        disabled={!isAvailable}
+                                                        className={`h-8 min-w-[32px] px-2 border text-[11px] uppercase tracking-widest transition-all ${
+                                                            selectedSize === size
+                                                                ? "border-black bg-black text-white"
+                                                                : !isAvailable 
+                                                                    ? "border-neutral-100 text-neutral-300 cursor-not-allowed bg-neutral-50 decoration-slice line-through"
+                                                                    : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                                                        }`}
+                                                    >
+                                                        {size}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Actions */}
                         <div className="flex gap-4 mb-2">
                             <button
                                 onClick={handleAddToCart}
-                                disabled={isAdded}
+                                disabled={isAdded || (hasVariants && !selectedVariantId)}
                                 className={`flex-1 py-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-400 ${
                                     isAdded 
                                         ? "bg-emerald-600 text-white" 
-                                        : "bg-black text-white hover:bg-neutral-800"
+                                        : (hasVariants && !selectedVariantId) ? "bg-neutral-200 text-neutral-400 cursor-not-allowed" : "bg-black text-white hover:bg-neutral-800"
                                 }`}
                             >
-                                {isAdded ? "✓ Added to Cart" : "Add to Cart"}
+                                {isAdded ? "✓ Added to Cart" : (hasVariants && !selectedVariantId) ? "Select Option" : "Add to Cart"}
                             </button>
                             <button
                                 onClick={handleWishlist}

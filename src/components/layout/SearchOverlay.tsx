@@ -3,190 +3,231 @@
 import { useUIStore } from "@/store/ui-store";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useFeaturedProducts } from "@/lib/api/products-hooks";
+import { productApi } from "@/lib/api/products";
 
 export default function SearchOverlay() {
+  const router = useRouter();
   const { isSearchOpen, closeSearch } = useUIStore();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  
-  // Fetch suggested products for "You may also like"
-  const { products: suggestedProducts } = useFeaturedProducts(3);
+
+  // Quick search tags for bags
+  const quickTags = [
+    { label: "HANDBAGS", query: "handbag" },
+    { label: "TOTES", query: "tote" },
+    { label: "CLUTCHES", query: "clutch" },
+  ];
 
   useEffect(() => {
     if (isSearchOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => inputRef.current?.focus(), 150);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
+      setQuery("");
+      setResults([]);
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isSearchOpen]);
 
-  const highlights = [
-        { name: "New In", href: "/collections/new-arrivals" },
-        { name: "Bags", href: "/collections/bags" },
-        { name: "Shoes", href: "/collections/shoes" },
-        { name: "Ready to wear", href: "/collections/ready-to-wear" },
-  ];
+  // Handle ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchOpen) {
+        closeSearch();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSearchOpen, closeSearch]);
 
-  const trending = [
-        "Soft, spacious bags",
-        "Lightweight athletic sneakers",
-        "Everyday functionality",
-        "Smooth retro shapes",
-  ];
+  // Debounced search
+  useEffect(() => {
+    if (query.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const data = await productApi.getAll({ search: query, limit: 6 });
+        setResults(data.data || []);
+      } catch (err) {
+        console.error("Search error:", err);
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSearch = () => {
+    if (query.length > 0) {
+      closeSearch();
+      router.push(`/shop?q=${encodeURIComponent(query)}`);
+    }
+  };
+
+  const handleTagClick = (tagQuery: string) => {
+    setQuery(tagQuery);
+    closeSearch();
+    router.push(`/shop?q=${encodeURIComponent(tagQuery)}`);
+  };
 
   return (
     <AnimatePresence>
       {isSearchOpen && (
-        <div className="fixed inset-0 z-[100]">
-            {/* Backdrop with Glass Effect */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh]">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={closeSearch}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          />
+
+          {/* Modal - Apple Glass Style */}
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.98 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative z-[101] w-[92%] max-w-[640px] bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/50"
+            style={{
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+            }}
+          >
+            {/* Search Input Header */}
+            <div className="flex items-center px-6 py-5 border-b border-white/30 bg-white/40">
+              {/* Search Icon */}
+              <svg 
+                className="w-5 h-5 text-neutral-400 shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor" 
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+
+              {/* Input */}
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search products..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+                className="flex-1 mx-4 text-base text-neutral-800 placeholder:text-neutral-400 bg-transparent border-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0"
+                style={{ boxShadow: 'none', outline: 'none' }}
+              />
+
+              {/* Close Button */}
+              <button
                 onClick={closeSearch}
-                className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            />
+                className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
+                aria-label="Close search"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-            {/* Content Container (80% Height for maximum visibility) */}
-            <motion.div
-                initial={{ y: "-100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "-100%" }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="relative z-[101] bg-white flex flex-col h-[80vh] shadow-2xl"
-            >
-                {/* Top Bar */}
-                <header className="flex items-center h-20 px-6 md:px-12 border-b border-neutral-200 bg-white shrink-0">
-                    {/* Search Icon */}
-                    <svg className="w-5 h-5 text-black mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-
-                    {/* Input */}
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="Search"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && query.length > 0) {
-                                closeSearch();
-                                window.location.href = `/search?q=${encodeURIComponent(query)}`;
-                            }
-                        }}
-                        className="flex-1 h-full bg-transparent font-utility text-sm md:text-base text-black placeholder:text-neutral-400 focus:outline-none focus:ring-0 focus-visible:outline-none border-none ring-0 outline-none"
-                    />
-
-                    {/* Close Button with Separator */}
-                    <div className="flex items-center h-full"> 
-                        <div className="w-px h-full bg-neutral-200 mx-6 md:mx-8" />
-                        <button 
-                            onClick={closeSearch}
-                            className="font-utility text-[11px] uppercase tracking-[0.15em] font-medium text-black hover:opacity-70 transition-opacity"
-                        >
-                            Close
-                        </button>
-                    </div>
-                </header>
-
-                {/* Split Content Area */}
-                <div className="flex-1 flex overflow-hidden">
-                    <div className="w-full max-w-[1920px] mx-auto flex flex-col md:flex-row px-6 md:px-12 py-8 h-full overflow-y-auto">
-                        
-                        {/* Left Sidebar: Highlights */}
-                        <div className="w-full md:w-1/4 mb-8 md:mb-0 md:border-r border-transparent md:pr-12">
-                            <h3 className="font-utility text-[10px] uppercase tracking-[0.2em] text-neutral-500 mb-6">
-                                Highlights
-                            </h3>
-                            <div className="flex flex-col gap-4">
-                                {highlights.map((item) => (
-                                    <Link 
-                                        key={item.name}
-                                        href={item.href}
-                                        onClick={closeSearch}
-                                        className="font-utility text-sm text-neutral-600 hover:text-black transition-colors"
-                                    >
-                                        {item.name}
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Right Content Area */}
-                        <div className="w-full md:w-3/4 md:pl-12 pb-20">
-                            {query.length > 0 ? (
-                                // Search Results / Suggested State
-                                <div className="animate-fadeIn">
-                                    <div className="flex justify-between items-end mb-8">
-                                        <div>
-                                            <h3 className="font-utility text-sm text-neutral-500 mb-2">
-                                                {suggestedProducts.length} results found
-                                            </h3>
-                                            <h3 className="font-display text-lg">You may also like</h3>
-                                        </div>
-                                        <Link
-                                            href={`/search?q=${encodeURIComponent(query)}`}
-                                            onClick={closeSearch}
-                                            className="font-utility text-[10px] uppercase tracking-[0.15em] font-medium text-black border-b border-black pb-1 hover:opacity-70 transition-opacity"
-                                        >
-                                            View all results
-                                        </Link>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-                                        {suggestedProducts.slice(0, 4).map((product) => (
-                                            <Link 
-                                                key={product.id} 
-                                                href={`/products/${product.slug}`}
-                                                onClick={closeSearch}
-                                                className="group block"
-                                            >
-                                                <div className="relative aspect-[3/4] bg-neutral-100 mb-4 overflow-hidden">
-                                                    <Image
-                                                        src={product.media?.images?.[0] || ""}
-                                                        alt={product.name}
-                                                        fill
-                                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                                    />
-                                                </div>
-                                                <p className="font-utility text-[10px] uppercase tracking-[0.1em] text-neutral-500 mb-1">
-                                                    {product.category?.name}
-                                                </p>
-                                                <h4 className="font-display text-sm text-black mb-1 line-clamp-1">{product.name}</h4>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                // Default State: Trending
-                                <div className="animate-fadeIn">
-                                    <h3 className="font-utility text-[10px] uppercase tracking-[0.2em] text-neutral-500 mb-6">
-                                        What's Trending
-                                    </h3>
-                                    <div className="flex flex-col gap-4">
-                                        {trending.map((item) => (
-                                            <button
-                                                key={item}
-                                                onClick={() => setQuery(item)}
-                                                className="text-left font-utility text-sm text-neutral-600 hover:text-black transition-colors"
-                                            >
-                                                {item}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+            {/* Content Area */}
+            <div className="px-6 py-8 min-h-[180px] bg-white/30">
+              {query.length > 0 && results.length > 0 ? (
+                /* Search Results */
+                <div className="space-y-3">
+                  {results.slice(0, 5).map((product) => (
+                    <Link
+                      key={product.id}
+                      href={`/products/${product.slug}`}
+                      onClick={closeSearch}
+                      className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-neutral-50 transition-colors"
+                    >
+                      <div className="w-12 h-12 bg-neutral-100 rounded overflow-hidden shrink-0">
+                        {product.images?.[0] && (
+                          <Image
+                            src={product.images[0]}
+                            alt={product.name}
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-neutral-800 truncate">{product.name}</p>
+                        <p className="text-xs text-neutral-500">
+                          ${product.salePrice || product.basePrice}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                  
+                  {/* View All Link */}
+                  <button
+                    onClick={handleSearch}
+                    className="w-full mt-3 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    View all results →
+                  </button>
                 </div>
-            </motion.div>
+              ) : query.length > 0 && !isSearching ? (
+                /* No Results */
+                <div className="text-center py-4">
+                  <p className="text-sm text-neutral-500">No products found</p>
+                </div>
+              ) : isSearching ? (
+                /* Loading */
+                <div className="text-center py-4">
+                  <div className="inline-block w-5 h-5 border-2 border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
+                </div>
+              ) : (
+                /* Default State */
+                <div className="text-center">
+                  <p className="text-sm text-neutral-400 mb-6">
+                    Start typing to search...
+                  </p>
+
+                  {/* Quick Search Tags */}
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    {quickTags.map((tag) => (
+                      <button
+                        key={tag.label}
+                        onClick={() => handleTagClick(tag.query)}
+                        className="px-4 py-1.5 text-xs font-medium tracking-wide text-neutral-700 bg-neutral-100 rounded-full hover:bg-neutral-200 transition-colors"
+                      >
+                        {tag.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-white/50 border-t border-white/30">
+              <p className="text-xs text-neutral-400 text-center">
+                Press <kbd className="px-1.5 py-0.5 mx-1 bg-white rounded border border-neutral-200 font-mono text-[10px]">ESC</kbd> to close
+              </p>
+            </div>
+          </motion.div>
         </div>
       )}
     </AnimatePresence>

@@ -40,15 +40,31 @@ export const useCartStore = create<CartState>()(
       addItem: async (productId, quantity = 1, variantId) => {
         const { isAuthenticated } = useAuthStore.getState();
         
-        // Optimistic Update (Simplification for now, better to just wait or proper optimistic with rollback)
-        // For now, let's just call backend and refetch or update state
-        if (isAuthenticated) {
-            try {
-                const updatedCart = await cartApi.add(productId, quantity, variantId);
-                set({ items: updatedCart.items });
-            } catch (err) {
-                console.error("Failed to add to cart backend", err);
-            }
+        if (!isAuthenticated) {
+          // User not logged in - show a message or prompt to login
+          console.warn("Cart: User not authenticated. Please login to add items to cart.");
+          // You could also dispatch a UI action here to show a toast/modal
+          alert("Please login to add items to your cart.");
+          return;
+        }
+        
+        try {
+          const updatedCart = await cartApi.add(productId, quantity, variantId);
+          set({ items: updatedCart.items });
+        } catch (err: any) {
+          console.error("Failed to add to cart:", err);
+          
+          // Provide more specific error messages
+          if (err.code === 'ERR_NETWORK') {
+            alert("Network error: Unable to connect to the server. Please check if the backend is running.");
+          } else if (err.response?.status === 401) {
+            alert("Session expired. Please login again.");
+            useAuthStore.getState().logout();
+          } else if (err.response?.status === 400) {
+            alert(err.response?.data?.message || "Invalid request. Please try again.");
+          } else {
+            alert("Failed to add item to cart. Please try again.");
+          }
         }
       },
 
