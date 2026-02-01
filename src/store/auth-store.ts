@@ -1,17 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import api from '@/lib/api/axios';
+import { authApi } from '@/lib/api/auth';
 import { useCartStore } from './cart-store';
+import { User } from '@/types/api';
 
-interface User {
-  id: string;
-  email: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-  avatar?: string;
-  preferences?: Record<string, unknown>;
-}
 
 interface AuthState {
   user: User | null;
@@ -39,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
       loginGoogle: async (code) => {
         set({ isLoading: true });
         try {
-          const { data } = await api.post('/auth/google', { code });
+          const data = await authApi.loginGoogle(code);
           set({ 
             user: data.user, 
             accessToken: data.accessToken, 
@@ -57,7 +49,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          await api.post('/auth/logout');
+          await authApi.logout();
         } catch (err) {
           console.error("Logout error", err);
         } finally {
@@ -69,8 +61,8 @@ export const useAuthStore = create<AuthState>()(
           // If we have a token but no user, or just to sync
           if (!get().accessToken) return;
           try {
-              const { data } = await api.get('/auth/me');
-              set({ user: data });
+              const user = await authApi.getMe();
+              set({ user });
           } catch(err) {
               console.error("Fetch me failed", err);
               // potentially logout if token invalid

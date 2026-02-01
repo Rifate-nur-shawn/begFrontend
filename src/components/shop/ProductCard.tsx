@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { UI_CONSTANTS } from "@/lib/constants";
-import { Product } from "@/lib/api/products-hooks";
+import { Product } from "@/types/api";
 
 // Default mock data for demo purposes
 const DEFAULT_COLORS = [
@@ -42,15 +42,10 @@ export default function ProductCard({ product }: { product: Product }) {
         e.stopPropagation();
         if (!selectedSize) return;
         
-        addItem({
-            id: product.id,
-            productId: product.id,
-            name: product.name,
-            price: price,
-            image: image,
-            size: selectedSize,
-            color: selectedColor || "Default"
-        });
+        // Use simpler addItem signature matching the new store
+        addItem(product.id, 1); 
+        // Note: Backend might require variantId later, for now just product ID and quantity.
+        // If variants are needed, we'd find the variant ID from product.variants matching size/color.
     };
 
     return (

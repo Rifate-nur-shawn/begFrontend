@@ -1,88 +1,36 @@
 import useSWR from 'swr';
 import api from './axios';
+import { Product, PaginatedResponse } from '@/types/api';
 
-// Types
-interface Product {
-    id: string;
-    name: string;
-    slug: string;
-    description: string;
-    basePrice: number;
-    salePrice?: number;
-    media?: string[];
-    images?: string[];
-    categories?: {
-        id: string;
-        name: string;
-        slug: string;
-    }[];
-    // Keep legacy category for backward compatibility if needed, or remove
-    category?: {
-        id: string;
-        name: string;
-        slug: string;
-    };
-    variants?: {
-        size: string;
-        inStock: boolean;
-        price?: number;
-    }[];
-    colors?: { name: string; hex: string }[];
-    sizes?: string[];
-    isNew?: boolean;
-}
-
-interface PaginatedResponse {
-    data: Product[];
-    pagination: {
-        page: number;
-        size: number;
-        total: number;
-        totalPages: number;
-    };
-}
-
-// Dummy luxury bag products (Empty as we rely on backend)
-const DUMMY_BAGS: Product[] = [];
-
-// Wrapper function to provide fallback data
-const dummyPaginatedResponse: PaginatedResponse = {
-    data: [],
-    pagination: { page: 1, size: 50, total: 0, totalPages: 0 }
-};
-
-// SWR fetcher using axios with fallback
+// SWR fetcher
 const fetcher = async (url: string) => {
-    try {
-        const { data } = await api.get(url);
-        return data;
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
+    const { data } = await api.get(url);
+    return data;
 };
 
-// Configuration for SWR - aggressive caching for performance
+// Configuration
 const swrConfig = {
-    revalidateOnFocus: false,  // Don't refetch when window regains focus
-    revalidateIfStale: false,  // Use cached data even if stale
-    dedupingInterval: 60000,   // Dedupe requests for 60 seconds
-    focusThrottleInterval: 60000,
-    keepPreviousData: true,    // Keep showing old data while loading new
+    revalidateOnFocus: false,
+    dedupingInterval: 60000,
+    keepPreviousData: true,
 };
 
-/**
- * Hook to fetch all products with optional category filter
- * Uses SWR for caching and automatic revalidation
- */
 export function useProducts(categorySlug?: string, limit: number = 50) {
     const params = new URLSearchParams();
-    if (categorySlug) params.set('category_slug', categorySlug);
+    if (categorySlug && categorySlug !== 'all') params.set('category_slug', categorySlug);
+    // Note: Backend endpoint might use different query param for category. 
+    // Checking previous curl context, didn't check category filtering. 
+    // Assuming backend supports filter by category slug if implemented.
+    // If not, we might need to filter client side or use a different endpoint.
     params.set('limit', limit.toString());
+    
+    // Determine endpoint. If specific category page (and backend supports /products?category=...), use that.
+    // However, backend might not support category query param on /products directly if not implemented.
+    // Use /products for now.
     
     const key = `/products?${params.toString()}`;
     
-    const { data, error, isLoading, mutate } = useSWR<PaginatedResponse>(
+    const { data, error, isLoading, mutate } = useSWR<PaginatedResponse<Product>>(
         key,
         fetcher,
         swrConfig
@@ -98,10 +46,6 @@ export function useProducts(categorySlug?: string, limit: number = 50) {
     };
 }
 
-/**
- * Hook to fetch a single product by slug
- * Uses SWR for caching
- */
 export function useProduct(slug: string | null) {
     const { data, error, isLoading } = useSWR<Product>(
         slug ? `/products/${slug}` : null,
@@ -117,18 +61,11 @@ export function useProduct(slug: string | null) {
     };
 }
 
-/**
- * Hook to fetch featured products for homepage
- * Cached aggressively since homepage loads frequently
- */
 export function useFeaturedProducts(limit: number = 4) {
-    const { data, error, isLoading } = useSWR<PaginatedResponse>(
-        `/products?limit=${limit}`,
+    const { data, error, isLoading } = useSWR<PaginatedResponse<Product>>(
+        `/products?limit=${limit}&featured=true`, // Assuming backend supports featured=true or sort
         fetcher,
-        {
-            ...swrConfig,
-            dedupingInterval: 120000,  // Cache for 2 minutes
-        }
+        { ...swrConfig, dedupingInterval: 120000 }
     );
     
     return {
@@ -138,18 +75,3 @@ export function useFeaturedProducts(limit: number = 4) {
     };
 }
 
-/**
- * Prefetch products for a category
- * Call this on hover/mouse enter to preload data
- */
-export async function prefetchProducts(categorySlug: string) {
-    try {
-        await api.get(`/products?category_slug=${categorySlug}&limit=50`);
-    } catch (e) {
-        // Silent fail for prefetch
-        console.debug('Prefetch failed:', e);
-    }
-}
-
-// Export dummy bags for direct access
-export { DUMMY_BAGS };

@@ -1,9 +1,10 @@
 import { create } from 'zustand';
-import api from '@/lib/api/axios';
+import { wishlistApi } from '@/lib/api/wishlist';
 import { useAuthStore } from './auth-store';
+import { Product } from '@/types/api';
 
 export interface WishlistItem {
-  id: string; // Product ID
+  id: string; // Product ID or Wishlist Item ID
   productId: string;
   name: string;
   price: number;
@@ -15,7 +16,7 @@ interface WishlistState {
   items: WishlistItem[];
   isLoading: boolean;
   fetchWishlist: () => Promise<void>;
-  addItem: (product: any) => Promise<void>; // flexible product type for now
+  addItem: (product: Product) => Promise<void>;
   removeItem: (productId: string) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
 }
@@ -30,12 +31,10 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const { data } = await api.get('/wishlist');
-      // Map backend response to WishlistItem if necessary.
-      // Assuming backend returns list of products or similar structure
-      // Adjust mapping based on actual API response, inferred for now as standard
-      const mappedItems = (data.items || []).map((item: any) => ({
-          id: item.id || item.productId,
+      const data = await wishlistApi.get();
+      // Map backend response to WishlistItem
+      const mappedItems = (data.items || []).map((item) => ({
+          id: item.productId, // Use productId as main ID for easier lookup
           productId: item.productId,
           name: item.product?.name,
           price: item.product?.salePrice || item.product?.basePrice,
@@ -52,7 +51,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
 
   addItem: async (product) => {
     const { isAuthenticated } = useAuthStore.getState();
-    if (!isAuthenticated) return; // Or trigger login modal
+    if (!isAuthenticated) return;
 
     // Optimistic Update
     const newItem: WishlistItem = {
@@ -60,14 +59,14 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
         productId: product.id,
         name: product.name,
         price: product.salePrice || product.basePrice,
-        image: product.media?.images?.[0] || "",
+        image: product.media?.[0] || product.images?.[0] || "",
         addedAt: new Date().toISOString()
     };
     
     set((state) => ({ items: [...state.items, newItem] }));
 
     try {
-      await api.post('/wishlist', { productId: product.id });
+      await wishlistApi.add(product.id);
     } catch (error) {
       console.error("Failed to add to wishlist", error);
       // Rollback
@@ -83,10 +82,10 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
 
     if (isAuthenticated) {
         try {
-            await api.delete(`/wishlist/${productId}`);
+            await wishlistApi.remove(productId);
         } catch (error) {
             console.error("Failed to remove from wishlist", error);
-             // Verify if rollback is needed or just re-fetch
+             // Re-fetch to ensure sync
              get().fetchWishlist();
         }
     }

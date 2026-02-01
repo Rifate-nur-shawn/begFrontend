@@ -4,11 +4,11 @@ import { useCartStore } from "@/store/cart-store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import api from "@/lib/api/axios";
+import { orderApi } from "@/lib/api/orders";
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCartStore();
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum, item) => sum + (item.product.salePrice || item.product.basePrice) * item.quantity, 0);
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -40,7 +40,7 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     
     try {
-        await api.post('/checkout', {
+        await orderApi.create({
             address: {
                 email: formData.email,
                 firstName: formData.firstName,
@@ -117,18 +117,23 @@ export default function CheckoutPage() {
                     <p className="font-utility text-sm text-neutral-500 mb-6">Your bag is empty.</p>
                 ) : (
                     <div className="space-y-6 mb-8 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                        {items.map((item) => (
-                            <div key={`${item.id}-${item.size}`} className="flex gap-4">
-                                <div className="relative w-16 h-20 bg-neutral-100 shrink-0">
-                                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        {items.map((item) => {
+                            const price = item.product.salePrice || item.product.basePrice;
+                            const image = item.product.media?.[0] || item.product.images?.[0] || "";
+                            
+                            return (
+                                <div key={`${item.id}-${item.productId}`} className="flex gap-4">
+                                    <div className="relative w-16 h-20 bg-neutral-100 shrink-0">
+                                        <Image src={image} alt={item.product.name} fill className="object-cover" />
+                                    </div>
+                                    <div>
+                                        <p className="font-display text-sm">{item.product.name}</p>
+                                        <p className="font-utility text-xs text-neutral-500">Qty: {item.quantity}</p>
+                                        <p className="font-utility text-xs mt-1">Tk {price}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-display text-sm">{item.name}</p>
-                                    <p className="font-utility text-xs text-neutral-500">{item.size} | x{item.quantity}</p>
-                                    <p className="font-utility text-xs mt-1">Tk {item.price}</p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 

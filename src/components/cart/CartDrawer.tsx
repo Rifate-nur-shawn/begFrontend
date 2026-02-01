@@ -10,8 +10,7 @@ import { useEffect } from "react";
 export default function CartDrawer() {
   const { isCartOpen, closeCart } = useUIStore();
   const { items } = useCartStore();
-
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum, item) => sum + (item.product.salePrice || item.product.basePrice) * item.quantity, 0);
 
   // Prevent scrolling when cart is open
   useEffect(() => {
@@ -62,7 +61,7 @@ export default function CartDrawer() {
                 </div>
               ) : (
                 items.map((item, i) => (
-                    <CartItem key={`${item.id}-${item.size}-${i}`} item={item} />
+                    <CartItem key={`${item.id}-${item.productId}-${i}`} item={item} />
                 ))
               )}
             </div>
