@@ -19,14 +19,19 @@ export default function AccountPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [addresses, setAddresses] = useState<any[]>([]);
     
-    // Form state
+    // Form state - using backend field names
     const [isEditingAddress, setIsEditingAddress] = useState<string | null>(null);
     const [addressForm, setAddressForm] = useState({
-        street: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: ""
+        label: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        addressLine: "",
+        district: "",
+        division: "",
+        thana: "",
+        postalCode: "",
+        isDefault: false
     });
 
     const fetchOrders = async () => {
@@ -64,14 +69,31 @@ export default function AccountPage() {
     async function handleAddressSubmit(e: React.FormEvent) {
         e.preventDefault();
         try {
+            // Backend expects camelCase JSON field names
+            const payload = {
+                label: addressForm.label,
+                firstName: addressForm.firstName,
+                lastName: addressForm.lastName,
+                phone: addressForm.phone,
+                addressLine: addressForm.addressLine,
+                district: addressForm.district,
+                division: addressForm.division,
+                thana: addressForm.thana,
+                postalCode: addressForm.postalCode,
+                isDefault: addressForm.isDefault
+            };
+            
             if (isEditingAddress) {
-                await api.put(`/user/addresses/${isEditingAddress}`, addressForm);
+                await api.put(`/user/addresses/${isEditingAddress}`, payload);
             } else {
-                await api.post('/user/addresses', addressForm);
+                await api.post('/user/addresses', payload);
             }
             
             // Reset
-            setAddressForm({ street: "", city: "", state: "", zip: "", country: "" });
+            setAddressForm({ 
+                label: "", firstName: "", lastName: "", phone: "",
+                addressLine: "", district: "", division: "", thana: "", postalCode: "", isDefault: false 
+            });
             setIsEditingAddress(null);
             fetchAddresses();
         } catch (error) {
@@ -92,11 +114,16 @@ export default function AccountPage() {
     function startEditAddress(addr: any) {
         setIsEditingAddress(addr.id);
         setAddressForm({
-            street: addr.street,
-            city: addr.city,
-            state: addr.state,
-            zip: addr.zip,
-            country: addr.country
+            label: addr.label || "",
+            firstName: addr.first_name || addr.firstName || "",
+            lastName: addr.last_name || addr.lastName || "",
+            phone: addr.phone || "",
+            addressLine: addr.address_line || addr.addressLine || "",
+            district: addr.district || "",
+            division: addr.division || "",
+            thana: addr.thana || "",
+            postalCode: addr.postal_code || addr.postalCode || "",
+            isDefault: addr.is_default || addr.isDefault || false
         });
         // Scroll to form if needed
     }
@@ -188,12 +215,25 @@ export default function AccountPage() {
                          <div className="space-y-12">
                              {/* List */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {addresses.map((addr) => (
+                                {addresses.length === 0 ? (
+                                    <p className="font-utility text-xs tracking-widest text-neutral-500">No addresses saved yet.</p>
+                                ) : addresses.map((addr) => (
                                     <div key={addr.id} className="border border-neutral-200 p-6 relative group">
+                                        {addr.label && (
+                                            <p className="font-utility text-[10px] uppercase tracking-wider text-neutral-500 mb-2">
+                                                {addr.label} {addr.is_default && <span className="text-green-600">• Default</span>}
+                                            </p>
+                                        )}
+                                        <p className="font-utility text-sm font-medium mb-1">
+                                            {addr.first_name || addr.firstName} {addr.last_name || addr.lastName}
+                                        </p>
+                                        {addr.phone && (
+                                            <p className="font-utility text-xs text-neutral-500 mb-3">{addr.phone}</p>
+                                        )}
                                         <p className="font-utility text-xs leading-relaxed mb-4">
-                                            {addr.street}<br/>
-                                            {addr.city}, {addr.state} {addr.zip}<br/>
-                                            {addr.country}
+                                            {addr.address_line || addr.addressLine}<br/>
+                                            {addr.thana && `${addr.thana}, `}{addr.district}<br/>
+                                            {addr.division} {addr.postal_code || addr.postalCode}
                                         </p>
                                         <div className="flex gap-4 pt-4 border-t border-neutral-100">
                                             <button 
@@ -214,55 +254,95 @@ export default function AccountPage() {
                             </div>
 
                             {/* Add/Edit Form */}
-                            <div className="max-w-md">
+                            <div className="max-w-lg">
                                 <h3 className="font-display text-2xl mb-6">{isEditingAddress ? 'Edit Address' : 'Add New Address'}</h3>
                                 <form onSubmit={handleAddressSubmit} className="space-y-4">
                                     <input 
                                         type="text" 
-                                        placeholder="Street Address" 
+                                        placeholder="Label (e.g., Home, Office)" 
                                         className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
-                                        value={addressForm.street}
-                                        onChange={e => setAddressForm({...addressForm, street: e.target.value})}
+                                        value={addressForm.label}
+                                        onChange={e => setAddressForm({...addressForm, label: e.target.value})}
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <input 
+                                            type="text" 
+                                            placeholder="First Name" 
+                                            className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
+                                            value={addressForm.firstName}
+                                            onChange={e => setAddressForm({...addressForm, firstName: e.target.value})}
+                                            required
+                                        />
+                                        <input 
+                                            type="text" 
+                                            placeholder="Last Name" 
+                                            className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
+                                            value={addressForm.lastName}
+                                            onChange={e => setAddressForm({...addressForm, lastName: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <input 
+                                        type="tel" 
+                                        placeholder="Phone Number" 
+                                        className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
+                                        value={addressForm.phone}
+                                        onChange={e => setAddressForm({...addressForm, phone: e.target.value})}
+                                        required
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Address Line (Street, House No.)" 
+                                        className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
+                                        value={addressForm.addressLine}
+                                        onChange={e => setAddressForm({...addressForm, addressLine: e.target.value})}
                                         required
                                     />
                                     <div className="grid grid-cols-2 gap-4">
                                         <input 
                                             type="text" 
-                                            placeholder="City" 
+                                            placeholder="Thana / Upazila" 
                                             className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
-                                            value={addressForm.city}
-                                            onChange={e => setAddressForm({...addressForm, city: e.target.value})}
-                                            required
+                                            value={addressForm.thana}
+                                            onChange={e => setAddressForm({...addressForm, thana: e.target.value})}
                                         />
                                         <input 
                                             type="text" 
-                                            placeholder="State" 
+                                            placeholder="District" 
                                             className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
-                                            value={addressForm.state}
-                                            onChange={e => setAddressForm({...addressForm, state: e.target.value})}
+                                            value={addressForm.district}
+                                            onChange={e => setAddressForm({...addressForm, district: e.target.value})}
                                             required
                                         />
                                     </div>
                                      <div className="grid grid-cols-2 gap-4">
                                         <input 
                                             type="text" 
-                                            placeholder="ZIP / Postal Code" 
+                                            placeholder="Division" 
                                             className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
-                                            value={addressForm.zip}
-                                            onChange={e => setAddressForm({...addressForm, zip: e.target.value})}
+                                            value={addressForm.division}
+                                            onChange={e => setAddressForm({...addressForm, division: e.target.value})}
                                             required
                                         />
                                         <input 
                                             type="text" 
-                                            placeholder="Country" 
+                                            placeholder="Postal Code" 
                                             className="w-full bg-neutral-50 border border-neutral-200 p-3 font-utility text-xs outline-none focus:border-black"
-                                            value={addressForm.country}
-                                            onChange={e => setAddressForm({...addressForm, country: e.target.value})}
-                                            required
+                                            value={addressForm.postalCode}
+                                            onChange={e => setAddressForm({...addressForm, postalCode: e.target.value})}
                                         />
                                     </div>
-                                    <div className="flex gap-4">
-                                        <button className="bg-primary text-white px-8 py-3 font-utility text-xs uppercase tracking-widest hover:opacity-90">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input 
+                                            type="checkbox"
+                                            checked={addressForm.isDefault}
+                                            onChange={e => setAddressForm({...addressForm, isDefault: e.target.checked})}
+                                            className="w-4 h-4"
+                                        />
+                                        <span className="font-utility text-xs">Set as default address</span>
+                                    </label>
+                                    <div className="flex gap-4 pt-2">
+                                        <button type="submit" className="bg-primary text-white px-8 py-3 font-utility text-xs uppercase tracking-widest hover:opacity-90">
                                             {isEditingAddress ? 'Update Address' : 'Save Address'}
                                         </button>
                                         {isEditingAddress && (
@@ -270,7 +350,10 @@ export default function AccountPage() {
                                                 type="button"
                                                 onClick={() => {
                                                     setIsEditingAddress(null);
-                                                    setAddressForm({ street: "", city: "", state: "", zip: "", country: "" });
+                                                    setAddressForm({ 
+                                                        label: "", firstName: "", lastName: "", phone: "",
+                                                        addressLine: "", district: "", division: "", thana: "", postalCode: "", isDefault: false 
+                                                    });
                                                 }}
                                                 className="text-neutral-500 font-utility text-xs uppercase tracking-widest hover:text-black"
                                             >
