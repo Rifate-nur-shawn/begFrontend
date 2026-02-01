@@ -70,14 +70,14 @@ export default function CollectionsPage() {
                                     <div className="absolute inset-0 bg-neutral-200">
                                        <Image 
                                          src={collection.image || "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=2069&auto=format&fit=crop"} 
-                                         alt={collection.name}
+                                         alt={collection.title || "Collection"}
                                          fill
                                          className="object-cover transition-transform duration-700 group-hover:scale-105"
                                        />
                                     </div>
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
                                     <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                                        <h2 className="font-display text-3xl md:text-4xl tracking-wide">{collection.name}</h2>
+                                        <h2 className="font-display text-3xl md:text-4xl tracking-wide">{collection.title}</h2>
                                         <div className="h-px w-12 bg-white mt-4 transition-all duration-300 group-hover:w-24" />
                                         <span className="font-utility text-[10px] uppercase tracking-widest mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
                                             View Collection

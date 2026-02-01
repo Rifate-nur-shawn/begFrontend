@@ -104,7 +104,7 @@ export default function FeaturedGrid() {
                 className="text-center mt-16"
             >
                 <Link 
-                    href="/collections/new-arrivals" 
+                    href="/shop" 
                     className="inline-flex items-center justify-center bg-black text-white font-utility text-[11px] font-bold tracking-[0.2em] uppercase px-14 py-4 hover:bg-neutral-800 transition-colors"
                 >
                     View All Products
