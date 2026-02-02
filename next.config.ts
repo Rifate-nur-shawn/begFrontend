@@ -2,34 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Allow all external images - use with caution in production
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: '**', // Allow any HTTPS hostname
       },
       {
-        protocol: 'https',
-        hostname: '*.susercontent.com', // Shopee/Lazada images
-      },
-      {
-        protocol: 'https',
-        hostname: 'down-my.img.susercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.r2.cloudflarestorage.com', // R2 storage
-      },
-      {
-        protocol: 'https',
-        hostname: '*.cloudflare.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.amazonaws.com', // S3
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com', // Cloudinary
+        protocol: 'http',
+        hostname: 'localhost', // Local dev server
       },
     ],
   },

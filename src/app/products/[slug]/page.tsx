@@ -150,18 +150,22 @@ export default function ProductPage() {
 
     const currentImage = images[selectedImageIndex] || "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1935&auto=format&fit=crop";
     
-    // Price Logic
-    const variantPrice = selectedVariant?.price || 0;
+    // Price Logic - fallback to product price if variant has no price
+    const variantPrice = selectedVariant?.price || product?.basePrice || 0;
     const variantSalePrice = selectedVariant?.salePrice;
     
     // Determine the price to display
-    const finalPrice = selectedVariant 
+    // If variant is selected AND has its own price, use variant prices
+    // Otherwise fallback to product-level prices
+    const hasVariantPrice = selectedVariant && selectedVariant.price !== null;
+    
+    const finalPrice = hasVariantPrice
         ? (variantSalePrice && variantSalePrice < variantPrice ? variantSalePrice : variantPrice)
-        : (product?.salePrice && product.salePrice < product.basePrice ? product.salePrice : product?.basePrice || 0);
+        : (product?.salePrice && product.salePrice < (product?.basePrice || 0) ? product.salePrice : product?.basePrice || 0);
         
-    const originalPrice = selectedVariant
+    const originalPrice = hasVariantPrice
         ? (variantSalePrice && variantSalePrice < variantPrice ? variantPrice : null)
-        : (product?.salePrice && product.salePrice < product.basePrice ? product.basePrice : null);
+        : (product?.salePrice && product.salePrice < (product?.basePrice || 0) ? product.basePrice : null);
 
     // Calculate discount only if we have a valid original price and final price is lower
     const hasDiscount = !!originalPrice && (finalPrice < originalPrice);

@@ -38,7 +38,7 @@ export default function ProductEditorPage({ params }: PageProps) {
     salePrice: null,
     isFeatured: false,
     isActive: true,
-    media: [],
+    images: [],
     categoryIds: [],
     collectionIds: [],
     variants: [{ ...EMPTY_VARIANT }],
@@ -74,7 +74,7 @@ export default function ProductEditorPage({ params }: PageProps) {
             salePrice: product.salePrice || null,
             isFeatured: product.isFeatured || false,
             isActive: product.isActive ?? true,
-            media: product.images || (Array.isArray(product.media) ? product.media : []),
+            images: product.images || (Array.isArray(product.images) ? product.images : []),
             categoryIds: product.categories?.map(c => c.id) || [],
             collectionIds: product.collections?.map(c => c.id) || [],
             variants: product.variants?.length > 0 
@@ -121,12 +121,12 @@ export default function ProductEditorPage({ params }: PageProps) {
     }));
   };
 
-  // Add media URL
+  // Add images? URL
   const handleAddMedia = () => {
     if (!mediaInput.trim()) return;
     setForm(prev => ({
       ...prev,
-      media: [...(prev.media || []), mediaInput.trim()],
+      images: [...(prev.images || []), mediaInput.trim()],
     }));
     setMediaInput("");
   };
@@ -162,7 +162,7 @@ export default function ProductEditorPage({ params }: PageProps) {
       if (data.url) {
         setForm(prev => ({
           ...prev,
-          media: [...(prev.media || []), data.url],
+          images: [...(prev.images || []), data.url],
         }));
       }
     } catch (error: unknown) {
@@ -179,11 +179,11 @@ export default function ProductEditorPage({ params }: PageProps) {
     }
   };
 
-  // Remove media
+  // Remove images?
   const handleRemoveMedia = (index: number) => {
     setForm(prev => ({
       ...prev,
-      media: prev.media?.filter((_, i) => i !== index),
+      images: prev.images?.filter((_, i) => i !== index),
     }));
   };
 
@@ -437,9 +437,9 @@ export default function ProductEditorPage({ params }: PageProps) {
             </button>
           </div>
           
-          {form.media && form.media.length > 0 ? (
+          {form.images && form.images.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {form.media.map((url, index) => (
+              {form.images.map((url, index) => (
                 <div key={index} className="relative aspect-square bg-neutral-100 rounded-sm overflow-hidden group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt="" className="w-full h-full object-cover" />
@@ -613,7 +613,7 @@ export default function ProductEditorPage({ params }: PageProps) {
                 className="rounded border-neutral-300 w-5 h-5"
               />
               <div>
-                <span className="font-medium text-sm">Active</span>
+                <span className="font-images?um text-sm">Active</span>
                 <p className="text-xs text-neutral-400">Product is visible on store</p>
               </div>
             </label>
@@ -625,7 +625,7 @@ export default function ProductEditorPage({ params }: PageProps) {
                 className="rounded border-neutral-300 w-5 h-5"
               />
               <div>
-                <span className="font-medium text-sm">Featured</span>
+                <span className="font-images?um text-sm">Featured</span>
                 <p className="text-xs text-neutral-400">Show on homepage</p>
               </div>
             </label>

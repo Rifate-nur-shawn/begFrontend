@@ -123,7 +123,7 @@ export interface CreateProductPayload {
   salePrice?: number | null;
   isFeatured?: boolean;
   isActive?: boolean;
-  media?: string[];
+  images?: string[];  // Backend expects 'images', not 'media'
   categoryIds?: string[];
   collectionIds?: string[];
   variants?: Omit<AdminVariant, 'id' | 'productId'>[];
