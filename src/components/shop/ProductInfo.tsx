@@ -13,15 +13,11 @@ export default function ProductInfo({ product }: { product: Product }) {
   const handleAddToCart = () => {
     if (!selectedSize) return;
     
-    addToStore({
-        id: product.id,
-        productId: product.id,
-        name: product.name,
-        price: product.salePrice || product.basePrice,
-        size: selectedSize,
-        color: "Default",
-        image: product.images?.[0] || product.media?.[0] || "/placeholder-bag.png"
-    });
+    // Find variant ID from selected size if available
+    const selectedVariant = product.variants?.find(v => v.name === selectedSize);
+    const variantId = selectedVariant?.id;
+    
+    addToStore(product.id, 1, variantId);
     openCartUI();
   };
 
@@ -41,7 +37,7 @@ export default function ProductInfo({ product }: { product: Product }) {
             </div>
              <div className="flex justify-between font-utility text-[10px] uppercase text-neutral-500">
                 <span>Category</span>
-                <span>{product.categories?.[0]?.name || product.category?.name}</span>
+                <span>{product.categories?.[0]?.name || 'Uncategorized'}</span>
             </div>
        </div>
 

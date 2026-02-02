@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FcGoogle } from "react-icons/fc"; // Requires react-icons, if not available I'll use text or SVG
 
 export default function LoginPage() {
     const { loginGoogle, isAuthenticated, isLoading } = useAuthStore();

@@ -307,7 +307,7 @@ export default function AdminDashboard() {
                                 <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#888'}} tickFormatter={(value) => `৳${value}`} />
                                 <Tooltip 
                                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '4px' }} 
-                                    formatter={(value: number) => [`৳${value.toLocaleString()}`, 'Revenue']}
+                                    formatter={(value) => [`৳${(value as number || 0).toLocaleString()}`, 'Revenue']}
                                 />
                                 <Area type="monotone" dataKey="revenue" stroke="#0a0a0a" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>

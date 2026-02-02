@@ -2,16 +2,20 @@ import useSWR from 'swr';
 import api from './axios';
 import { Product, PaginatedResponse } from '@/types/api';
 
+// Re-export Product for backwards compatibility
+export type { Product } from '@/types/api';
+
 // SWR fetcher
 const fetcher = async (url: string) => {
     const { data } = await api.get(url);
     return data;
 };
 
-// Configuration
+// Configuration - reduced cache for fresher data
 const swrConfig = {
-    revalidateOnFocus: false,
-    dedupingInterval: 60000,
+    revalidateOnFocus: true,       // Refresh when user returns to tab
+    revalidateOnMount: true,       // Always fetch fresh on mount
+    dedupingInterval: 5000,        // 5 seconds deduping (was 60s)
     keepPreviousData: true,
 };
 
@@ -62,10 +66,11 @@ export function useProduct(slug: string | null) {
 }
 
 export function useFeaturedProducts(limit: number = 4) {
+    // Backend uses is_featured param and sort=created_at desc for newest
     const { data, error, isLoading } = useSWR<PaginatedResponse<Product>>(
-        `/products?limit=${limit}&featured=true`, // Assuming backend supports featured=true or sort
+        `/products?limit=${limit}&is_featured=true`,
         fetcher,
-        { ...swrConfig, dedupingInterval: 120000 }
+        swrConfig
     );
     
     return {
