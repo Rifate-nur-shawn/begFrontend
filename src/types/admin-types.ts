@@ -153,3 +153,109 @@ export interface ProductFilter {
   isActive?: 'true' | 'false' | 'all';
   sort?: string;
 }
+
+// Order Types
+export interface AdminOrderUser {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}
+
+export interface AdminOrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  product: AdminProduct;
+  variantId?: string;
+  quantity: number;
+  price: number;
+}
+
+export interface AdminOrder {
+  id: string;
+  userId: string;
+  user: AdminOrderUser;
+  status: OrderStatus;
+  totalAmount: number;
+  shippingFee: number;
+  shippingAddress: ShippingAddress;
+  paymentMethod: string;
+  paymentStatus: PaymentStatus;
+  paidAmount: number;
+  refundedAmount: number;
+  paymentDetails?: Record<string, unknown>;
+  isPreOrder: boolean;
+  items: AdminOrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShippingAddress {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  district?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+export interface OrderHistory {
+  id: string;
+  orderId: string;
+  previousStatus?: string;
+  newStatus: string;
+  reason?: string;
+  createdBy?: string;
+  createdName?: string;
+  createdAt: string;
+}
+
+export type OrderStatus = 
+  | 'pending' 
+  | 'processing' 
+  | 'shipped' 
+  | 'delivered' 
+  | 'cancelled';
+
+export type PaymentStatus = 
+  | 'pending' 
+  | 'paid' 
+  | 'verified' 
+  | 'failed' 
+  | 'refunded' 
+  | 'partial_refund';
+
+export interface OrderFilter {
+  page?: number;
+  limit?: number;
+  status?: OrderStatus | '';
+  payment_status?: PaymentStatus | '';
+  search?: string;
+  is_preorder?: boolean;
+}
+
+export interface OrdersResponse {
+  orders: AdminOrder[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+// Order Action Payloads
+export interface UpdateOrderStatusPayload {
+  status: OrderStatus;
+  note?: string;
+}
+
+export interface UpdatePaymentStatusPayload {
+  status: PaymentStatus;
+}
+
+export interface RefundPayload {
+  amount: number;
+  reason: string;
+  restock: boolean;
+}
