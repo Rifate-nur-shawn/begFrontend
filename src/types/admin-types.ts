@@ -100,8 +100,12 @@ export interface ProductStats {
 export interface InventoryLog {
   id: number;
   productId: string;
+  productName: string;
+  sku: string;
   variantId?: string;
+  quantity: number;
   changeAmount: number;
+  stockAfter: number;
   reason: string;
   referenceId: string;
   createdAt: string;
@@ -258,4 +262,111 @@ export interface RefundPayload {
   amount: number;
   reason: string;
   restock: boolean;
+}
+
+// User Types
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: 'admin' | 'customer';
+  firstName: string;
+  lastName: string;
+  phone: string;
+  avatar: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UsersResponse {
+  users: AdminUser[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface UserFilter {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: 'admin' | 'customer' | '';
+}
+
+// Config/Settings Types
+export interface ShippingZone {
+  id: number;
+  key: string;
+  label: string;
+  cost: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConfigEnums {
+  orderStatuses: string[];
+  paymentStatuses: string[];
+  paymentMethods: string[];
+  shippingZones: ShippingZone[];
+}
+
+export interface CreateShippingZonePayload {
+  key: string;
+  label: string;
+  cost: number;
+  isActive: boolean;
+}
+
+export interface UpdateShippingZonePayload {
+  label: string;
+  cost: number;
+  isActive: boolean;
+}
+
+// Content Types
+export interface ContentBlock {
+  id: string;
+  sectionKey: string;
+  content: Record<string, unknown>;
+  isActive: boolean;
+  startAt?: string | null;
+  endAt?: string | null;
+  updatedAt: string;
+}
+
+// Coupon Types
+export interface Coupon {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  minSpend: number;
+  usageLimit: number;
+  usedCount: number;
+  startAt?: string | null;
+  expiresAt?: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateCouponPayload {
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  minSpend: number;
+  usageLimit: number;
+  startAt?: string;
+  expiresAt?: string;
+  isActive: boolean;
+}
+
+export interface UpdateCouponPayload extends CreateCouponPayload {}
+
+export interface CouponsResponse {
+  coupons: Coupon[];
+  total: number;
+  page: number;
+  limit: number;
 }

@@ -8,8 +8,11 @@ import {
   ShoppingBag, 
   Users, 
   Settings, 
-  Package, 
-  LogOut 
+  Package,
+  LogOut,
+  FolderTree,
+  Layers,
+  Boxes,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -20,10 +23,14 @@ export default function AdminSidebar() {
   const menuItems = [
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
     { name: "Products", href: "/admin/products", icon: ShoppingBag },
+    { name: "Categories", href: "/admin/categories", icon: FolderTree },
+    { name: "Collections", href: "/admin/collections", icon: Layers },
+    { name: "Inventory", href: "/admin/inventory", icon: Boxes },
     { name: "Orders", href: "/admin/orders", icon: Package },
     { name: "Customers", href: "/admin/users", icon: Users },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
+
 
   return (
     <aside className="w-64 fixed inset-y-0 left-0 bg-[#0a0a0a] text-white border-r border-white/10 z-50 flex flex-col">
