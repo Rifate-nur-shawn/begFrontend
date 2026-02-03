@@ -12,12 +12,25 @@ const CAMPAIGN_IMAGES = [
 export default function CampaignPage() {
   return (
     <div className="bg-canvas">
-       {/* Intro */}
-       <div className="h-screen flex items-center justify-center bg-canvas">
-            <h1 className="font-display text-6xl md:text-9xl text-center leading-none">
+       {/* Hero with Background Image - extends under navbar */}
+       <div className="h-screen relative flex items-center justify-center overflow-hidden -mt-16">
+            {/* Background Image - High-res fashion model with bag */}
+            <Image
+                src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=3386&auto=format&fit=crop"
+                alt="Campaign hero"
+                fill
+                priority
+                className="object-cover object-center"
+            />
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/40" />
+            {/* Title */}
+            <h1 className="font-display text-6xl md:text-9xl text-center leading-none text-white relative z-10 drop-shadow-2xl">
                 THE<br/>CAMPAIGN
             </h1>
        </div>
+
+
 
        {/* Horizontal Scroll Section */}
        <HorizontalScroll className="gap-12 pl-12 md:pl-32">
