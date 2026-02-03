@@ -64,7 +64,7 @@ export default function Footer() {
               About Us
             </Link>
             <Link href="/stores" className="text-sm hover:text-black transition-colors">
-              Boutiques
+              Branches
             </Link>
           </div>
 

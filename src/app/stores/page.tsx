@@ -29,7 +29,7 @@ export default function StoresPage() {
     <div className="min-h-screen bg-canvas pt-32 pb-24 px-4 md:px-12">
       <div className="max-w-[1920px] mx-auto">
         <div className="text-center mb-24">
-          <h1 className="font-display text-5xl md:text-8xl mb-6">Boutiques</h1>
+          <h1 className="font-display text-5xl md:text-8xl mb-6">Branches</h1>
           <p className="font-utility text-xs tracking-widest uppercase text-neutral-500">
             Visit us and experience Velancis in person
           </p>
